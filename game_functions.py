@@ -32,9 +32,13 @@ def keyup_events(event, screen, player):
     if player.controlType == "keyboard":
         pass
 
+def check_events():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
 
-def update_screen(screen):
-    screen.fill("red")
+def update_screen(screen, settings):
+    screen.fill(settings.bgcolor)
 
 
 def update_player():
@@ -43,4 +47,3 @@ def update_player():
 
 def check_player_collisions():
     pass
-
