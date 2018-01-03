@@ -42,11 +42,22 @@ def check_events(screen, player):
         if event.type == pygame.KEYUP:
             keyup_events(event, screen, player)
 
-def check_events_menu():
+def check_events_menu(menu):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            pos = pygame.mouse.get_pos()
+            for item in menu.main_menu_items:
+                if item.rect.collidepoint(pos):
+                    print(item.name)
+                    if item.name == "Start":
+                        menu.state = False
+                    else:
+                        menu.state = item.name
+
+
 
 def update_screen(screen, settings):
     screen.fill(settings.bgcolor)

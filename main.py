@@ -8,14 +8,14 @@ def run_game():
     pygame.init()
     settings = Settings(pygame.display.Info().current_h,
                         pygame.display.Info().current_w,[])
-    menu = Menu()
+    menu = Menu(settings)
     screen = pygame.display.set_mode(settings.screensize)
     player1 = Player(screen, 1, (255, 000, 000), 100, 100, "keyboard");
     settings.players.append(player1)
     
     while True:
         if menu.state:
-            gf.check_events_menu()
+            gf.check_events_menu(menu)
             menu.draw(screen, settings)
         else:
             screen.fill((000, 255, 000))
