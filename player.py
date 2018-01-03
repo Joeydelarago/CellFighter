@@ -6,8 +6,6 @@ class Player:
     def __init__(self,screen, playerNum, color, startX, startY, controlType):
         self.x = startX;
         self.y = startY;
-        self.outerX = startX;
-        self.outerY = startY;
         self.xSpeed = 0;
         self.ySpeed = 0;
         self.screen = screen;
@@ -16,8 +14,8 @@ class Player:
         self.attackDirection = [0,0];
         self.attack = 1;
         self.defence = 1;
-        self.bodySize = 32;
-        self.nucleusSize = 8;
+        self.bodySize = 64;
+        self.nucleusSize = 16;
         self.color = color;
         self.speed = 1;
         self.mutations = {};
@@ -31,13 +29,17 @@ class Player:
         self.left = 0;
         self.up = 0;
         self.down = 0;
+        self.active = False;
         self.innerVertices = [];
         self.outerVertices = [];
-        self.controlType = controlType #keyboard/joystick
+        self.controlType = controlType; #keyboard/joystick
         
+        self.calculateVectors()
         
-        for i in range(12):
-            radians = math.radians(i * 30);
+    
+    def calculateVectors(self):
+        for i in range(36):
+            radians = math.radians(i * 10);
             self.outerVertices.append([]);
             self.outerVertices[i].append(math.floor(math.cos(radians)*self.bodySize + 0.5));
             self.outerVertices[i].append(math.floor(math.sin(radians)*self.bodySize + 0.5));
@@ -50,20 +52,21 @@ class Player:
     def draw(self):
         currentInnerVertices = [];
         currentOuterVertices = [];
-        for i in range(12):
-            currentInnerVertices.append([])
+        for i in range(36):
+            currentInnerVertices.append([]);
             currentInnerVertices[i].append(self.innerVertices[i][0] + self.x);
             currentInnerVertices[i].append(self.innerVertices[i][1] + self.y);
+
+            currentOuterVertices.append([]);
+            currentOuterVertices[i].append(self.outerVertices[i][0] + self.x);
+            currentOuterVertices[i].append(self.outerVertices[i][1] + self.y);
+            pygame.draw.rect(self.screen, self.color, [currentOuterVertices[i][0]-6,currentOuterVertices[i][1]-6,12,12]);
             
-            currentOuterVertices.append([])
-            currentOuterVertices[i].append(self.outerVertices[i][0] + self.outerX);
-            currentOuterVertices[i].append(self.outerVertices[i][1] + self.outerY);
-            
-        pygame.draw.polygon(self.screen, (0,0,255), currentOuterVertices);
-        pygame.draw.lines(self.screen, self.color, True, currentOuterVertices, 2);
+        """pygame.draw.polygon(self.screen, (0,0,255), currentOuterVertices);
+        pygame.draw.aalines(self.screen, self.color, True, currentOuterVertices, 5);
             
         pygame.draw.polygon(self.screen, (0,0,155), currentInnerVertices);
-        pygame.draw.lines(self.screen, (155,0,0), True, currentInnerVertices, 1);
+        pygame.draw.aalines(self.screen, (155,0,0), True, currentInnerVertices, 5);"""
         
     
     def update(self):
@@ -78,12 +81,7 @@ class Player:
         
         self.x += xSpeed*maxSpeed;
         self.y += ySpeed*maxSpeed;    
-        
-        if math.fabs(self.x - self.outerX) > 4:
-            self.outerX += (self.x - self.outerX)/2
-            
-        if math.fabs(self.y - self.outerY) > 4:
-            self.outerY += (self.y - self.outerY)/2
+    
         
         if self.x != prevX or self.y != prevY:
             self.attackDirection[0] = math.copysign(1,self.x-prevX) if self.x != prevX else 0;
@@ -93,9 +91,11 @@ class Player:
             self.attackTimer -= 1;
         
     
-    def attack(self):
+    """def attack(self):
         if attackTimer == 0:
-            spikeVectors = [[0,0],[32*self.attackDirection,],[0,0]]
+            spikeCenterX = 32*self.attackDirection[0]
+            spikeCenterY = 32*self.attackDirection[1]
+            spikeVectors = [[spikeCenterX +,0],[spikeCenterX,spikeCenterY],[0,0]]"""
             
             
             
