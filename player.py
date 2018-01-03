@@ -24,17 +24,17 @@ class Player:
         self.up = False;
         self.down = False;
         self.vertices = [[0,0]]*12;
-        self.controlType = "keyboard"//joystick;
+        self.controlType = "keyboard"#joystick;
     
     
-    def calculateVectors():
+    def calculateVectors(self):
         for i in range(12):
             radians = math.radians(i * 30);
             self.vertices[i][0] = math.cos(radians);
             self.vertices[i][1] = math.sin(radians);
     
     
-    def draw():
+    def draw(self):
         currentVertices = [[0,0]]*12;
         for i in range(12):
             currentVertices[i][0] = self.vertices[i][0] + self.x;
