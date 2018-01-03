@@ -8,7 +8,7 @@ def run_game():
     pygame.init()
     screen = pygame.display.set_mode((1000, 1000))
     players = []
-    player1 = Player(screen, 1, (255, 000, 000), 100, 100)
+    player1 = Player(screen, 1, (255, 000, 000), 100, 100, "keyboard");
     players.append(player1)
     
     while True:

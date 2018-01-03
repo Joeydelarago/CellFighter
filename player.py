@@ -1,8 +1,9 @@
 import pygame
+import math
 
 class Player:
     
-    def __init__(self, screen, playerNum, color, startX, startY):
+    def __init__(self,screen, playerNum, color, startX, startY, controlType):
         self.x = startX;
         self.y = startY;
         self.screen = screen;
@@ -23,23 +24,27 @@ class Player:
         self.left = False;
         self.up = False;
         self.down = False;
-        self.vertices = [[0,0]]*12;
-        self.controlType = "keyboard"#joystick;
+        self.vertices = [];
+        self.controlType = controlType #keyboard/joystick
+        
+        self.calculateVectors()
     
     
     def calculateVectors(self):
         for i in range(12):
             radians = math.radians(i * 30);
-            self.vertices[i][0] = math.cos(radians);
-            self.vertices[i][1] = math.sin(radians);
-    
+            self.vertices.append([]);
+            self.vertices[i].append(math.floor(math.cos(radians)*self.bodySize + 0.5));
+            self.vertices[i].append(math.floor(math.sin(radians)*self.bodySize + 0.5));
+
     
     def draw(self):
-        currentVertices = [[0,0]]*12;
+        currentVertices = [];
         for i in range(12):
-            currentVertices[i][0] = self.vertices[i][0] + self.x;
-            currentVertices[i][1] = self.vertices[i][1] + self.y;
-            pygame.draw.lines(self.screen, True, (255,255,255), currentVertices, 1);
+            currentVertices.append([])
+            currentVertices[i].append(self.vertices[i][0] + self.x);
+            currentVertices[i].append(self.vertices[i][1] + self.y);
+        pygame.draw.lines(self.screen, self.color, True, currentVertices, 2);
         
     
         
