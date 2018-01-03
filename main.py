@@ -20,11 +20,11 @@ def run_game():
         else:
             gf.check_events()
             screen.fill((000, 255, 000))
-            for player in players:
-                #player.update()
+            for player in settings.players:
+                player.update()
                 pass
 
-            for player in players:
+            for player in settings.players:
                 player.draw()
         pygame.display.flip()
 run_game()
