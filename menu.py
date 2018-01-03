@@ -6,15 +6,11 @@ class Menu(object):
         self.state = "main"
         self.main_menu_items = []
         start_button = MenuItem
-        self.main_menu_items.append((x, y, text))
+        #self.main_menu_items.append((x, y, text))
 
     def draw(self, screen, settings):
         if self.state == "main":
             screen.fill(settings.bg_color)
-            newFont=pygame.font.Font(textFont, textSize)
-            newText=newFont.render(message, 0, textColor)
- 
-    return newText
         if self.state == "options":
             pass
         if self.state == "game_over":
