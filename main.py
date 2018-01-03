@@ -24,4 +24,7 @@ def run_game():
                 player.update();
                 player.draw();
         pygame.display.flip()
-run_game()
+try:
+    run_game()
+except:
+    pygame.quit()
