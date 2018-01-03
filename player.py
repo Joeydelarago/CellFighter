@@ -14,7 +14,7 @@ class Player:
         self.bodySize = 32;
         self.nucleusSize = 8;
         self.color = color;
-        self.speed = 10;
+        self.speed = 1;
         self.mutations = {};
         self.attackRate = 1;
         self.spikeLength = 32;
@@ -53,7 +53,7 @@ class Player:
         ySpeed = self.up + self.down;
         maxSpeed = self.speed
         if math.fabs(xSpeed + ySpeed) == 2:
-            maxSpeed = math.floor(maxSpeed*0.7 + 0.5);
+            maxSpeed = maxSpeed*0.7 + 0.5;
             
         self.x += xSpeed*maxSpeed;
         self.y += ySpeed*maxSpeed;        

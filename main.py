@@ -18,13 +18,10 @@ def run_game():
             gf.check_events_menu()
             menu.draw(screen, settings)
         else:
-            gf.check_events()
             screen.fill((000, 255, 000))
             for player in settings.players:
-                player.update()
-                pass
-
-            for player in settings.players:
-                player.draw()
+                gf.check_events(screen,player);
+                player.update();
+                player.draw();
         pygame.display.flip()
 run_game()
