@@ -4,6 +4,12 @@ import sys
 
 from player import Player
 
+def controller_check():
+    joysticks = []
+    for i in range(pygame.joystick.get_count()):
+        joystick = pygame.joystick.Joystick(i)
+        joystick.init()
+        joysticks.append(joystick)
 
 def keydown_events(event, screen, player):
     if player.controlType == "keyboard":
@@ -56,6 +62,9 @@ def check_events_menu(menu):
                         menu.state = False
                     else:
                         menu.state = item.name
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.butten != 1:
+            pygame.quit()
+            sys.exit()
 
 
 
