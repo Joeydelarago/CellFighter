@@ -7,8 +7,8 @@ from player import Player
 def run_game():
     pygame.init()
     players = []
-    settings = Settings(pygame.display.Info().current_h/4,
-                        pygame.display.Info().current_w/4,[])
+    settings = Settings(pygame.display.Info().current_h,
+                        pygame.display.Info().current_w,[])
     menu = Menu(settings)
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     pygame.transform.scale(screen, settings.screensize)
