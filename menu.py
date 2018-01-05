@@ -4,26 +4,51 @@ import pygame
 class Menu(object):
     def __init__(self, settings):
         self.state = "main"
-        self.main_menu_items = []
-        start = MenuItem("Start", 200, (000, 000, 000),
-                                "Arial", 100, settings)
-        options = MenuItem("Options", 200, (000, 000, 000),
-                                "Arial", 420, settings)
-        quit = MenuItem("Quit", 200, (000, 000, 000),
-                                "Arial", 740, settings)
-        self.main_menu_items.append(start)
-        self.main_menu_items.append(quit)
-        self.main_menu_items.append(options)
-
+        self.pointer = 0
+        self.settings = settings
+        self.currentMenuItems = [];
+        self.changeMenuItems("main");
+    
     def draw(self, screen, settings):
+        screen.fill(settings.bg_color)
+        for item in self.currentMenuItems:
+            item.draw(screen, settings)
+
+    def changeMenuItems(self, newState):
+        self.currentMenuItems = []
+        self.pointer = 0
+        if newState == "main":
+            self.currentMenuItems.append(MenuItem("Start", 200, (000, 000, 000),
+                                "Arial", 100, self.settings))
+            self.currentMenuItems.append(MenuItem("Options", 200, (000, 000, 000),
+                                "Arial", 420, self.settings))
+            self.currentMenuItems.append(MenuItem("Quit", 200, (000, 000, 000),
+                                "Arial", 740, self.settings))
+        self.currentMenuItems[0].selected = True
+
+    def increasePointer(self):
+        self.currentMenuItems[self.pointer].selected = False
+        self.pointer += 1
+        if self.pointer > len(self.currentMenuItems) - 1:
+            self.pointer = 0
+        self.currentMenuItems[self.pointer].selected = True
+
+
+    def decreasePointer(self):
+        self.currentMenuItems[self.pointer].selected = False
+        self.pointer -= 1
+        if self.pointer < 0:
+            self.pointer = len(self.currentMenuItems) - 1
+        self.currentMenuItems[self.pointer].selected = True
+
+    def activateSelectedMenuItem(self):
         if self.state == "main":
-            screen.fill(settings.bg_color)
-            for item in self.main_menu_items:
-                item.draw(screen, settings)
-        if self.state == "options":
-            pass
-        if self.state == "game_over":
-            pass
+            if self.currentMenuItems[self.pointer].name == "Start":
+                self.settings.state = "game"
+
+
+
+
 
 
 class MenuItem(object):
@@ -43,4 +68,3 @@ class MenuItem(object):
         screen.blit(self.text, self.rect)
 
 
-        
