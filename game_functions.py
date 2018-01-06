@@ -1,7 +1,8 @@
 import pygame
-from time import sleep
 import sys
 from player import Player
+from time import sleep
+
 
 def controller_check():
     joysticks = []
@@ -9,6 +10,7 @@ def controller_check():
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
         joysticks.append(joystick)
+
 
 def keyboardPlayerEvents(event, screen, player):
     if event.type == pygame.KEYDOWN:
@@ -38,6 +40,7 @@ def keyboardPlayerEvents(event, screen, player):
 def joystickControls(event, screen, players):
     pass
 
+
 def check_events(screen, settings):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -47,12 +50,12 @@ def check_events(screen, settings):
         if settings.state == "game":
             if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
                 keyboardPlayerEvents(event, screen, settings.keyboardPlayer)
-            elif event.type == pygame.JOYBUTTONUP or event.type == pygame.JOYBUTTONDOWN or event.type == pygame.JOYAXISMOTION:
+            elif event.type == pygame.JOYBUTTONUP or\
+                    event.type == pygame.JOYBUTTONDOWN or\
+                    event.type == pygame.JOYAXISMOTION:
                 pass
         elif settings.state == "main":
             pass
-
-
 
 
 def check_events_menu(menu, settings):
@@ -79,7 +82,6 @@ def check_events_menu(menu, settings):
                 menu.increasePointer()
             elif event.key == pygame.K_RETURN:
                 menu.activateSelectedMenuItem()
-
 
 
 def update_screen(screen, settings):
