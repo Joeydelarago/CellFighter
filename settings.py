@@ -9,6 +9,7 @@ class Settings(object):
         self.keyboardPlayer = None
         self.joystickPlayers = []
         self.state = "main" #main/game/pause/gameover
+<<<<<<< HEAD
         self.volume = 10
 
     def addKeyboardPlayer(self, player):
@@ -16,4 +17,12 @@ class Settings(object):
 
     def addJoystickPlayer(self, player):
         self.joystickPlayers.append(player)
+=======
+
+    def addKeyboardPlayer(self, player):
+    	self.keyboardPlayer = player;
+
+    def addJoystickPlayer(self, player):
+    	self.joystickPlayers.append(player)
+>>>>>>> 74f75c3360a5c8ee5311b3d25ae60f9f87a59d3c
 

@@ -47,12 +47,24 @@ def check_events(screen, settings):
             pygame.quit()
             pygame.display.quit()
             sys.exit()
+<<<<<<< HEAD
         if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
             keyboardPlayerEvents(event, screen, settings.keyboardPlayer)
         elif event.type == pygame.JOYBUTTONUP or\
                 event.type == pygame.JOYBUTTONDOWN or\
                 event.type == pygame.JOYAXISMOTION:
                 pass
+=======
+        if settings.state == "game":
+            if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+                keyboardPlayerEvents(event, screen, settings.keyboardPlayer)
+            elif event.type == pygame.JOYBUTTONUP or\
+                    event.type == pygame.JOYBUTTONDOWN or\
+                    event.type == pygame.JOYAXISMOTION:
+                pass
+        elif settings.state == "main":
+            pass
+>>>>>>> 74f75c3360a5c8ee5311b3d25ae60f9f87a59d3c
 
 
 def check_events_menu(menu, settings):
@@ -70,7 +82,6 @@ def check_events_menu(menu, settings):
                 sys.exit()
             else:
                 menu.activate_selected_menu_item(event.key)
-
 
 def update_screen(screen, settings):
     screen.fill(settings.bgcolor)
