@@ -1,7 +1,8 @@
 import pygame
-from time import sleep
 import sys
 from player import Player
+from time import sleep
+
 
 def controller_check():
     joysticks = []
@@ -9,6 +10,7 @@ def controller_check():
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
         joysticks.append(joystick)
+
 
 def keyboardPlayerEvents(event, screen, player):
     if event.type == pygame.KEYDOWN:
@@ -38,21 +40,19 @@ def keyboardPlayerEvents(event, screen, player):
 def joystickControls(event, screen, players):
     pass
 
+
 def check_events(screen, settings):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             pygame.display.quit()
             sys.exit()
-        if settings.state == "game":
-            if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
-                keyboardPlayerEvents(event, screen, settings.keyboardPlayer)
-            elif event.type == pygame.JOYBUTTONUP or event.type == pygame.JOYBUTTONDOWN or event.type == pygame.JOYAXISMOTION:
+        if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+            keyboardPlayerEvents(event, screen, settings.keyboardPlayer)
+        elif event.type == pygame.JOYBUTTONUP or\
+                event.type == pygame.JOYBUTTONDOWN or\
+                event.type == pygame.JOYAXISMOTION:
                 pass
-        elif settings.state == "main":
-            pass
-
-
 
 
 def check_events_menu(menu, settings):
@@ -60,26 +60,16 @@ def check_events_menu(menu, settings):
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        """"if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            pos = pygame.mouse.get_pos()
-            for item in menu.main_menu_items:
-                if item.rect.collidepoint(pos):
-                    print(item.name)
-                    if item.name == "Start":
-                        settings.state = "game"
-                    else:
-                        settings.state = item.name
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.butten != 1:
-            pygame.quit()
-            sys.exit()"""
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                menu.decreasePointer()
+                menu.decrease_pointer()
             elif event.key == pygame.K_DOWN:
-                menu.increasePointer()
-            elif event.key == pygame.K_RETURN:
-                menu.activateSelectedMenuItem()
-
+                menu.increase_pointer()
+            elif event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                sys.exit()
+            else:
+                menu.activate_selected_menu_item(event.key)
 
 
 def update_screen(screen, settings):
