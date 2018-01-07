@@ -12,7 +12,6 @@ def run_game():
     settings = Settings(pygame.display.Info().current_h,
                         pygame.display.Info().current_w)
     settings.addKeyboardPlayer(Player(screen, settings, 1, (255, 000, 000),
-<<<<<<< HEAD
                                       100, 400, "keyboard"))
     settings.addJoystickPlayer(Player(screen, settings, 2, (255, 255, 000),
                                       400, 100, "joystick"))
@@ -20,15 +19,6 @@ def run_game():
                                       100, 100, "joystick"))
     settings.addJoystickPlayer(Player(screen, settings, 4, (000, 255, 000),
                                       400, 400, "joystick"))
-=======
-                                  100, 400, "keyboard"))
-    settings.addJoystickPlayer(Player(screen, settings, 2, (255, 255, 000),
-                                  400, 100, "joystick"))
-    settings.addJoystickPlayer(Player(screen, settings, 3, (255, 000, 255),
-                                  100, 100, "joystick"))
-    settings.addJoystickPlayer(Player(screen, settings, 4, (000, 255, 000),
-                                  400, 400, "joystick"))
->>>>>>> 74f75c3360a5c8ee5311b3d25ae60f9f87a59d3c
 
     settings.keyboardPlayer.active = True
     menu = Menu(settings)
@@ -38,9 +28,6 @@ def run_game():
         clock.tick(60)
 
         if settings.state == "main" or settin:
-            gf.check_events_menu(menu, settings)
-            menu.draw(screen, settings)
-        if settings.state == "settings":
             gf.check_events_menu(menu, settings)
             menu.draw(screen, settings)
         if settings.state == "settings":
