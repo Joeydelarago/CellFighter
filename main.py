@@ -27,10 +27,7 @@ def run_game():
     while True:
         clock.tick(60)
 
-        if settings.state == "main" or settin:
-            gf.check_events_menu(menu, settings)
-            menu.draw(screen, settings)
-        if settings.state == "settings":
+        if settings.state in ["main","settings"] :
             gf.check_events_menu(menu, settings)
             menu.draw(screen, settings)
         elif settings.state == "game":
