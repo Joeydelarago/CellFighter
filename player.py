@@ -8,7 +8,6 @@ class Player:
         self.y = startY;
         self.acceleration = 0.5;
         self.stretch = 0;
-        self.direction = 0;
         self.xSpeed = 0;
         self.ySpeed = 0;
         self.screen = screen;
@@ -126,7 +125,7 @@ class Player:
         self.x += self.xSpeed
         self.y += self.ySpeed
 
-        
+   
         if self.xSpeed == 0 and self.ySpeed == 0:
             self.stretch = 0;
         else:
@@ -136,7 +135,7 @@ class Player:
                 self.direction = math.atan(self.ySpeed/self.xSpeed)
             self.stretch = math.sqrt(self.xSpeed**2+self.ySpeed**2)
             print(self.stretch)
-
+            
 
         if self.x < 32 : 
             self.x = 32
@@ -152,9 +151,8 @@ class Player:
             self.y = self.settings.screensize[1] - 32
             self.ySpeed = 0
     
-        
         self.calculateVectors()
-
+        
         if self.x != prevX or self.y != prevY:
             self.attackDirection[0] = math.copysign(1,self.x-prevX) if self.x != prevX else 0;
             self.attackDirection[1] = math.copysign(1,self.y-prevY) if self.y != prevY else 0;
