@@ -12,7 +12,7 @@ def controller_check():
         joysticks.append(joystick)
 
 
-def keyboardPlayerEvents(event, screen, player, settings):
+def keyboardPlayerEvents(event, screen, player, menu, settings):
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_UP:
             player.up = -1
@@ -27,7 +27,9 @@ def keyboardPlayerEvents(event, screen, player, settings):
             pygame.quit()
             sys.exit()
         if event.key == pygame.K_ESCAPE:
-            setting.state = "pause"
+            settings.state = "main"
+            menu.state = "pause"
+            menu.set_menu_items()
 
     elif event.type == pygame.KEYUP:
         if event.key == pygame.K_UP:
@@ -44,14 +46,14 @@ def joystickControls(event, screen, players):
     pass
 
 
-def check_events(screen, settings):
+def check_events(screen, menu, settings):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             pygame.display.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
-            keyboardPlayerEvents(event, screen, settings.keyboardPlayer, settings)
+            keyboardPlayerEvents(event, screen, settings.keyboardPlayer, menu, settings)
         elif event.type == pygame.JOYBUTTONUP or\
                 event.type == pygame.JOYBUTTONDOWN or\
                 event.type == pygame.JOYAXISMOTION:

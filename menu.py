@@ -5,6 +5,7 @@ import sys
 class Menu(object):
     def __init__(self, settings):
         self.state = "main"
+        self.prevstate = None
         self.pointer = 0
         self.settings = settings
         self.MenuItems = []
@@ -38,6 +39,18 @@ class Menu(object):
             self.MenuItems.append(MenuItem(
                 "return", "Return", 200, (000, 000, 000),
                 "Arial", 740, self.settings.screensize[0] // 2))
+        if self.state == "pause":
+            self.MenuItems.append(MenuItem(
+                "return", "Return", 200, (000, 000, 000),
+                "Arial", 100, self.settings.screensize[0] // 2))
+            self.MenuItems.append(MenuItem(
+                "settings", "Settings", 200, (000, 000, 000),
+                "Arial", 420, self.settings.screensize[0] // 2))
+            self.MenuItems.append(MenuItem(
+                "quit", "Quit", 200, (000, 000, 000),
+                "Arial", 740, self.settings.screensize[0] // 2))
+        if self.state == "join":
+            pass
 
         self.MenuItems[0].selected = True
 
@@ -58,13 +71,25 @@ class Menu(object):
     def activate_selected_menu_item(self, event):
 
         if self.state == "pause":
-            pass
+            if event == pygame.K_RETURN:
+                if self.MenuItems[self.pointer].name == "settings":
+                    self.prevstate = "pause"
+                    self.state = "settings"
+                    self.set_menu_items()
+                if self.MenuItems[self.pointer].name == "quit":
+                    pygame.quit()
+                    pygame.display.quit()
+                    sys.exit()
+                if self.MenuItems[self.pointer].name == "return":
+                    self.state = "main"
+                    self.set_menu_items()
+
         if self.state == "main":
             if event == pygame.K_RETURN:
                 if self.MenuItems[self.pointer].name == "start":
                     self.settings.state = "game"
-
                 if self.MenuItems[self.pointer].name == "settings":
+                    self.prevstate = "main"
                     self.state = "settings"
                     self.set_menu_items()
                 if self.MenuItems[self.pointer].name == "quit":
@@ -82,7 +107,7 @@ class Menu(object):
                         pygame.display.set_mode((0, 0))
                         self.settings.fullscreen = False
                 if self.MenuItems[self.pointer].name == "return":
-                    self.state = "main"
+                    self.state = self.prevstate
                     self.set_menu_items()
 
             if event == pygame.K_LEFT:

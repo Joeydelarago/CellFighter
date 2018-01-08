@@ -32,7 +32,7 @@ def run_game():
             menu.draw(screen, settings)
         elif settings.state == "game":
             screen.fill((000, 255, 000))
-            gf.check_events(screen, settings)
+            gf.check_events(screen, menu, settings)
             if settings.keyboardPlayer.active:
                 settings.keyboardPlayer.update()
                 settings.keyboardPlayer.draw()
