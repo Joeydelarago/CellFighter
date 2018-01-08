@@ -19,6 +19,7 @@ def run_game():
                                       100, 100, "joystick"))
     settings.addJoystickPlayer(Player(screen, settings, 4, (000, 255, 000),
                                       400, 400, "joystick"))
+#>>>>>>> 74f75c3360a5c8ee5311b3d25ae60f9f87a59d3c
 
     settings.keyboardPlayer.active = True
     menu = Menu(settings)
@@ -27,10 +28,7 @@ def run_game():
     while True:
         clock.tick(60)
 
-        if settings.state == "main" or settin:
-            gf.check_events_menu(menu, settings)
-            menu.draw(screen, settings)
-        if settings.state == "settings":
+        if settings.state in ["main","settings"] :
             gf.check_events_menu(menu, settings)
             menu.draw(screen, settings)
         elif settings.state == "game":

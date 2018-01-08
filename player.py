@@ -7,6 +7,8 @@ class Player:
         self.x = startX;
         self.y = startY;
         self.acceleration = 0.5;
+        self.stretch = 0;
+        self.direction = 0;
         self.xSpeed = 0;
         self.ySpeed = 0;
         self.screen = screen;
@@ -40,15 +42,26 @@ class Player:
         
     
     def calculateVectors(self):
+        degrees_direction = math.degrees(self.direction)
+        self.outerVertices = [];
+        self.innerVertices = [];
         for i in range(36):
+            modifier = 1;
             radians = math.radians(i * 10);
+            if self.stretch:
+                angle_difference = abs(degrees_direction - (i * 10)) % 180
+                if angle_difference > 90:
+                    angle_difference = 180 - angle_difference;
+
+                modifier *= 1 - angle_difference/720 * (self.stretch/3)
+
             self.outerVertices.append([]);
-            self.outerVertices[i].append(math.floor(math.cos(radians)*self.bodySize + 0.5));
-            self.outerVertices[i].append(math.floor(math.sin(radians)*self.bodySize + 0.5));
+            self.outerVertices[i].append(round(math.cos(radians)*self.bodySize*(modifier)));
+            self.outerVertices[i].append(round(math.sin(radians)*self.bodySize*(modifier)));
             
             self.innerVertices.append([]);
-            self.innerVertices[i].append(math.floor(math.cos(radians)*self.nucleusSize + 0.5));
-            self.innerVertices[i].append(math.floor(math.sin(radians)*self.nucleusSize + 0.5));
+            self.innerVertices[i].append(round(math.cos(radians)*self.nucleusSize));
+            self.innerVertices[i].append(round(math.sin(radians)*self.nucleusSize));
 
 
     
@@ -84,8 +97,8 @@ class Player:
         
     
     def update(self):
-        maxSpeed = self.speed
-        """if abs(self.left + self.right) + abs(self.up + self.down) == 2:
+        """maxSpeed = self.speed
+        if abs(self.left + self.right) + abs(self.up + self.down) == 2:
             maxSpeed = maxSpeed*0.7;"""
 
         if (self.right + self.left):
@@ -113,6 +126,18 @@ class Player:
         self.x += self.xSpeed
         self.y += self.ySpeed
 
+        
+        if self.xSpeed == 0 and self.ySpeed == 0:
+            self.stretch = 0;
+        else:
+            if self.xSpeed == 0:
+                self.direction = math.radians(90) if self.ySpeed < 0 else math.radians(270)
+            else:
+                self.direction = math.atan(self.ySpeed/self.xSpeed)
+            self.stretch = math.sqrt(self.xSpeed**2+self.ySpeed**2)
+            print(self.stretch)
+
+
         if self.x < 32 : 
             self.x = 32
             self.xSpeed = 0
@@ -128,6 +153,8 @@ class Player:
             self.ySpeed = 0
     
         
+        self.calculateVectors()
+
         if self.x != prevX or self.y != prevY:
             self.attackDirection[0] = math.copysign(1,self.x-prevX) if self.x != prevX else 0;
             self.attackDirection[1] = math.copysign(1,self.y-prevY) if self.y != prevY else 0;
