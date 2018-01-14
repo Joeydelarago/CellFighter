@@ -1,7 +1,7 @@
 import pygame
 import game_functions as gf
 from settings import Settings
-from menu import Menu
+from menu import Menu, JoinMenu
 from player import Player
 
 
@@ -11,17 +11,8 @@ def run_game():
     clock = pygame.time.Clock()
     settings = Settings(pygame.display.Info().current_h,
                         pygame.display.Info().current_w)
-    settings.addKeyboardPlayer(Player(screen, settings, 1, (255, 000, 000),
-                                      100, 400, "keyboard"))
-    settings.addJoystickPlayer(Player(screen, settings, 2, (255, 255, 000),
-                                      400, 100, "joystick"))
-    settings.addJoystickPlayer(Player(screen, settings, 3, (255, 000, 255),
-                                      100, 100, "joystick"))
-    settings.addJoystickPlayer(Player(screen, settings, 4, (000, 255, 000),
-                                      400, 400, "joystick"))
-
-    settings.keyboardPlayer.active = True
     menu = Menu(settings)
+    join_menu = JoinMenu(settings)
     pygame.transform.scale(screen, settings.screensize)
     
     while True:
@@ -30,12 +21,18 @@ def run_game():
         if settings.state == "main":
             gf.check_events_menu(menu, settings)
             menu.draw(screen, settings)
+        elif settings.state == "join":
+            gf.controller_check()
+            gf.check_events_join(menu, settings, screen)
+            join_menu.draw(screen, settings)
+
         elif settings.state == "game":
-            screen.fill((000, 255, 000))
+            screen.fill((87, 97, 114))
             gf.check_events(screen, menu, settings)
-            if settings.keyboardPlayer.active:
-                settings.keyboardPlayer.update()
-                settings.keyboardPlayer.draw()
+            for player in settings.players:
+                player.update()
+            for player in settings.players:
+                player.draw()
         pygame.display.flip()
 
 

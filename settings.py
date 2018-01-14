@@ -6,19 +6,10 @@ class Settings(object):
         self.screensize = (width, height)
         self.fullscreen = False
         self.bg_color = (000, 100, 100)
-        self.keyboardPlayer = None
-        self.joystickPlayers = []
+        self.players = []
         self.state = "main" #main/game/pause/gameover
         self.volume = 10
 
-    def addKeyboardPlayer(self, player):
-        self.keyboardPlayer = player;
-
-    def addJoystickPlayer(self, player):
-        self.joystickPlayers.append(player)
-    def addKeyboardPlayer(self, player):
-        self.keyboardPlayer = player;
-
-    def addJoystickPlayer(self, player):
-        self.joystickPlayers.append(player)
+    def add_player(self, player):
+        self.players.append(player)
 

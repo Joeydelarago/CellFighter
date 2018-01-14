@@ -22,24 +22,24 @@ class Menu(object):
         if self.state == "main":
             self.MenuItems.append(MenuItem(
                 "start", "Start", 200, (000, 000, 000),
-                "Arial", 100, self.settings.screensize[0] // 2))
+                "Arial", 50, self.settings.screensize[0] // 2))
             self.MenuItems.append(MenuItem(
                 "settings", "Settings", 200, (000, 000, 000),
-                "Arial", 420, self.settings.screensize[0] // 2))
+                "Arial", 50 + (self.settings.screensize[1] // 3), self.settings.screensize[0] // 2))
             self.MenuItems.append(MenuItem(
                 "quit", "Quit", 200, (000, 000, 000),
-                "Arial", 740, self.settings.screensize[0] // 2))
-        if self.state == "settings":
-            self.MenuItems.append(MenuItem(
-                "fullscreen", "Fullscreen", 200, (000, 000, 000),
-                "Arial", 100, self.settings.screensize[0] // 2))
+                "Arial", 50 + (self.settings.screensize[1] // 3)*2, self.settings.screensize[0] // 2))
+        elif self.state == "settings":
             self.MenuItems.append(MenuItem(
                 "volume", "<Volume = 1>", 200, (000, 000, 000),
+                "Arial", 100, self.settings.screensize[0] // 2))
+            self.MenuItems.append(MenuItem(
+                "fullscreen", "Fullscreen", 200, (000, 000, 000),
                 "Arial", 420, self.settings.screensize[0] // 2))
             self.MenuItems.append(MenuItem(
                 "return", "Return", 200, (000, 000, 000),
                 "Arial", 740, self.settings.screensize[0] // 2))
-        if self.state == "pause":
+        elif self.state == "pause":
             self.MenuItems.append(MenuItem(
                 "return", "Return", 200, (000, 000, 000),
                 "Arial", 100, self.settings.screensize[0] // 2))
@@ -49,10 +49,9 @@ class Menu(object):
             self.MenuItems.append(MenuItem(
                 "quit", "Quit", 200, (000, 000, 000),
                 "Arial", 740, self.settings.screensize[0] // 2))
-        if self.state == "join":
-            pass
 
         self.MenuItems[0].selected = True
+        pygame.event.clear()
 
     def increase_pointer(self):
         self.MenuItems[self.pointer].selected = False
@@ -87,7 +86,7 @@ class Menu(object):
         if self.state == "main":
             if event == pygame.K_RETURN:
                 if self.MenuItems[self.pointer].name == "start":
-                    self.settings.state = "game"
+                    self.settings.state = "join"
                 if self.MenuItems[self.pointer].name == "settings":
                     self.prevstate = "main"
                     self.state = "settings"
@@ -119,6 +118,28 @@ class Menu(object):
                 if self.MenuItems[self.pointer].name == "volume" and self.settings.volume < 10:
                     self.settings.volume += 1
                     self.MenuItems[self.pointer].text = "<Volume = " + str(self.settings.volume) + ">"
+
+class JoinMenu(object):
+    def __init__(self, settings):
+        self.settings = settings
+        self.colors = [(255, 000, 000), (000, 255, 000),
+                       (000, 000, 255), (255, 255, 000)]
+
+    def draw(self, screen, settings):
+        screen.fill(settings.bg_color)
+        for i in range(4):
+            x = 20 + (i * settings.screensize[0] // 4)
+            y = 20
+            pygame.draw.rect(screen, (000, 000, 000), (x, y, settings.screensize[0] // 4 - 40,
+                                                       settings.screensize[1] - 40))
+            text = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", 200).render("Join", 0, self.colors[i])
+            screen.blit(text, (x, y))
+
+        for i in range(len(settings.players)):
+            pygame.draw.rect(screen, self.colors[i], (20 + (i * settings.screensize[0] // 4), 20, settings.screensize[0] // 4 - 40,
+                                                       settings.screensize[1] - 40))
+
+
 
 
 class MenuItem(object):

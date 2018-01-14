@@ -20,7 +20,6 @@ def keyboardPlayerEvents(event, screen, player, menu, settings):
             player.right = 1
         if event.key == pygame.K_DOWN:
             player.down = 1
-            print("down")
         if event.key == pygame.K_LEFT:
             player.left = -1
         if event.key == pygame.K_0:
@@ -30,6 +29,8 @@ def keyboardPlayerEvents(event, screen, player, menu, settings):
             settings.state = "main"
             menu.state = "pause"
             menu.set_menu_items()
+        if event.key == pygame.K_x:
+            player.attack()
 
     elif event.type == pygame.KEYUP:
         if event.key == pygame.K_UP:
@@ -42,8 +43,28 @@ def keyboardPlayerEvents(event, screen, player, menu, settings):
             player.left = 0
 
 
-def joystickControls(event, screen, players):
-    pass
+def joystickControls(event, screen, player):
+    if event.type == pygame.JOYAXISMOTION:
+        if event.axis == 1:
+            if event.value < -0.1:
+                player.up = event.value
+                player.down = 0
+            elif event.value > 0.1:
+                player.down = event.value
+                player.up = 0
+            else:
+                player.up = 0
+                player.down = 0
+        elif event.axis == 0:
+            if event.value < -0.1:
+                player.left = event.value
+                player.right = 0
+            elif event.value > 0.1:
+                player.right = event.value
+                player.left = 0
+            else:
+                player.left = 0
+                player.right = 0
 
 
 def check_events(screen, menu, settings):
@@ -53,11 +74,16 @@ def check_events(screen, menu, settings):
             pygame.display.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
-            keyboardPlayerEvents(event, screen, settings.keyboardPlayer, menu, settings)
+            for player in settings.players:
+                if player.controllerID == "keyboard":
+                    keyboardPlayerEvents(event, screen, player, menu, settings)
         elif event.type == pygame.JOYBUTTONUP or\
                 event.type == pygame.JOYBUTTONDOWN or\
                 event.type == pygame.JOYAXISMOTION:
-                pass
+            for player in settings.players:
+                if player.controllerID == event.joy:
+                    joystickControls(event, screen, player)
+
 
 
 def check_events_menu(menu, settings):
@@ -76,6 +102,28 @@ def check_events_menu(menu, settings):
             else:
                 menu.activate_selected_menu_item(event.key)
 
+def check_events_join(menu, settings, screen):
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN: 
+            if event.key == pygame.K_RETURN and len(settings.players) > 0:
+                settings.state = "game"
+            elif event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                sys.exit()
+            else:
+                for player in settings.players:
+                    if player.controllerID == "keyboard":
+                        return
+                settings.add_player(Player(screen, settings, len(settings.players) + 1, (180, 80, 80), 100, 400, "keyboard"))
+
+        elif event.type == pygame.JOYBUTTONDOWN:
+            for player in settings.players:
+                if event.joy == player.controllerID:
+                    return 
+            settings.add_player(Player(screen, settings, len(settings.players) + 1, (180, 80, 80), 100, 400, event.joy))
 
 def update_screen(screen, settings):
     screen.fill(settings.bgcolor)
