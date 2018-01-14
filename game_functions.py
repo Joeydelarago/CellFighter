@@ -1,5 +1,6 @@
 import pygame
 import sys
+import math
 from player import Player
 from time import sleep
 
@@ -46,25 +47,35 @@ def keyboardPlayerEvents(event, screen, player, menu, settings):
 def joystickControls(event, screen, player):
     if event.type == pygame.JOYAXISMOTION:
         if event.axis == 1:
-            if event.value < -0.1:
-                player.up = event.value
-                player.down = 0
-            elif event.value > 0.1:
-                player.down = event.value
-                player.up = 0
+            if math.sqrt(pygame.joystick.Joystick(event.joy).get_axis(0)**2 + event.value**2) > 0.25:
+                if abs(event.value) > 1:
+                    event.value = math.copysign(1,event.value)
+                if event.value < -0:
+                    player.up = event.value
+                    player.down = 0
+                elif event.value > 0:
+                    player.down = event.value
+                    player.up = 0
             else:
                 player.up = 0
                 player.down = 0
         elif event.axis == 0:
-            if event.value < -0.1:
-                player.left = event.value
-                player.right = 0
-            elif event.value > 0.1:
-                player.right = event.value
-                player.left = 0
+            if math.sqrt(pygame.joystick.Joystick(event.joy).get_axis(0)**2 + event.value**2) > 0.25:
+                if abs(event.value) > 1:
+                    event.value = math.copysign(1,event.value)
+                if event.value < -0:
+                    player.left = event.value
+                    player.right = 0
+                elif event.value >= 0:
+                    player.right = event.value
+                    player.left = 0
             else:
                 player.left = 0
                 player.right = 0
+    elif event.type == pygame.JOYBUTTONDOWN:
+        print(event.button)
+        if event.button == 2:
+            player.attack()
 
 
 def check_events(screen, menu, settings):
@@ -125,9 +136,50 @@ def check_events_join(menu, settings, screen):
                     return 
             settings.add_player(Player(screen, settings, len(settings.players) + 1, (180, 80, 80), 100, 400, event.joy))
 
+def draw_arena(screen, settings):
+    screen.fill((0, 0, 0))
+    screenx = settings.resolution()[0]
+    screeny = settings.resolution()[1]
+    screen.fill((87, 97, 114), (((screenx - screeny) // 2), 0, screeny,screeny))
+
+def draw_game_sidebars(screen, settings):
+    screenx = settings.resolution()[0]
+    screeny = settings.resolution()[1]
+    borderx = (screenx - screeny) // 2
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 20).render("Player 1", 0, (255, 0, 0))
+    screen.blit(player_info, (0, 0))
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Wins:", 0, (255, 0, 0))
+    screen.blit(player_info, (0, screeny // 10))
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Losses:", 0, (255, 0, 0))
+    screen.blit(player_info, (0, screeny // 5))
+
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 20).render("Player 2", 0, (0, 255, 0))
+    screen.blit(player_info, (0, screeny // 2))
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Wins:", 0, (0, 255, 0))
+    screen.blit(player_info, (0, (screeny // 2) + screeny // 10))
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Losses:", 0, (0, 255, 0))
+    screen.blit(player_info, (0, (screeny // 2) + screeny // 5))
+
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 20).render("Player 3", 0, (0, 0, 255))
+    screen.blit(player_info, (screenx - (borderx), 0))
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Wins:", 0, (0, 0, 255))
+    screen.blit(player_info, (screenx - (borderx), screeny // 10))
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Losses:", 0, (0, 0, 255))
+    screen.blit(player_info, (screenx - (borderx), screeny // 5))
+
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 20).render("Player 4", 0, (255, 255, 0))
+    screen.blit(player_info, (screenx - (borderx), screeny // 2))
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Wins:", 0, (255, 255, 0))
+    screen.blit(player_info, (screenx - (borderx), screeny // 2 + screeny // 10))
+    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Losses:", 0, (255, 255, 0))
+    screen.blit(player_info, (screenx - (borderx), screeny // 2 + screeny // 5))
+
 def update_screen(screen, settings):
     screen.fill(settings.bgcolor)
 
+def update_screen_resolution(settings):
+    pygame.display.set_mode(settings.resolutions[settings.respointer])
+    settings.fullscreen = False
 
 def update_player():
     player.draw()

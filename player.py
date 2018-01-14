@@ -73,8 +73,8 @@ class Player:
         playerSurface.set_alpha(self.colorSecondary.a) 
         for i in range(36):
             currentInnerVertices.append([]);
-            currentInnerVertices[i].append(self.innerVertices[i][0] + self.x - self.nucleusOffsetX);
-            currentInnerVertices[i].append(self.innerVertices[i][1] + self.y - self.nucleusOffsetY);
+            currentInnerVertices[i].append(self.innerVertices[i][0] + self.nucleusX);
+            currentInnerVertices[i].append(self.innerVertices[i][1] + self.nucleusY);
 
             currentOuterVertices.append([]);
             currentOuterVertices[i].append(self.outerVertices[i][0] + self.x);
@@ -110,14 +110,22 @@ class Player:
         
     
     def update(self):
-        maxSpeed = self.speed
-        if abs(self.left + self.right) + abs(self.up + self.down) == 2:
-            maxSpeed = maxSpeed*0.7;
+        maxXSpeed = self.speed
+        maxYSpeed = self.speed
+        movementMagnitude = math.sqrt((self.left + self.right)**2 + (self.up + self.down)**2)
+        if movementMagnitude > 0:
+            maxXSpeed *= math.fabs(self.right + self.left)*(1/movementMagnitude)
+            maxYSpeed *= math.fabs(self.up + self.down)*(1/movementMagnitude)
+            self.left *= 1/movementMagnitude
+            self.right*= 1/movementMagnitude
+            self.up *= 1/movementMagnitude
+            self.down *= 1/movementMagnitude
+            
 
         if (self.right + self.left):
             self.xSpeed += self.acceleration * (self.right + self.left)
-            if abs(self.xSpeed) > maxSpeed:
-                self.xSpeed = math.copysign(maxSpeed,self.xSpeed)
+            if abs(self.xSpeed) > maxXSpeed:
+                self.xSpeed = math.copysign(maxXSpeed,self.xSpeed)
         else:
             if self.xSpeed > 0 - self.acceleration and self.xSpeed < 0 + self.acceleration:
                 self.xSpeed = 0
@@ -125,8 +133,8 @@ class Player:
                 self.xSpeed -= math.copysign(self.acceleration, self.xSpeed)
         if (self.up + self.down):
             self.ySpeed += self.acceleration * (self.up + self.down)
-            if abs(self.ySpeed) > maxSpeed:
-                self.ySpeed = math.copysign(maxSpeed,self.ySpeed)
+            if abs(self.ySpeed) > maxYSpeed:
+                self.ySpeed = math.copysign(maxYSpeed,self.ySpeed)
         else:
             if self.ySpeed > 0 - self.acceleration and self.ySpeed < 0 + self.acceleration:
                 self.ySpeed = 0
@@ -173,8 +181,8 @@ class Player:
             self.ySpeed -= self.ySpeed//4
     
         
-        self.nucleusOffsetX = (self.xSpeed / maxSpeed)*8
-        self.nucleusOffsetY = (self.ySpeed / maxSpeed)*8 
+        self.nucleusX = self.x - (self.xSpeed / self.speed)*8
+        self.nucleusY = self.y - (self.ySpeed / self.speed)*8 
 
         self.calculateVectors()
 
@@ -198,6 +206,16 @@ class Player:
         if self.attackTimer > 0:
             self.attackTimer -= 1;
         
+
+    def checkCollisions(self, other):
+        if self.attacking > 0:
+            if math.sqrt((self.attackPoints[1][0] + self.x - other.nucleusX)**2 + (self.attackPoints[1][1] + self.y - other.nucleusY)**2)<other.nucleusSize:
+                print("I'm gay")
+                self.attacking *= -1
+        if math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)<self.bodySize - 6:
+            pass#atan2
+
+
     def attack(self):
         if self.attackTimer == 0:
             attackStartDistance = self.bodySize - (self.bodySize // 8)
@@ -210,7 +228,7 @@ class Player:
             self.attackPoints.append([round(math.cos(self.attackDirection + spikeWidth) * attackStartDistance),round(math.sin(self.attackDirection+spikeWidth)*attackStartDistance)])
             self.attacking = 1
             self.attackTimer = self.attackCooldown
-            
+        
             
             
             

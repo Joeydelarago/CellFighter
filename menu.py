@@ -1,5 +1,6 @@
 import pygame
 import sys
+import game_functions as gf
 
 
 class Menu(object):
@@ -9,6 +10,7 @@ class Menu(object):
         self.pointer = 0
         self.settings = settings
         self.MenuItems = []
+        self.selected_item = lambda: self.MenuItems[self.pointer]
         self.set_menu_items()
 
     def draw(self, screen, settings):
@@ -19,105 +21,122 @@ class Menu(object):
     def set_menu_items(self):
         self.MenuItems = []
         self.pointer = 0
+        screenx = self.settings.resolution()[0]
+        screeny = self.settings.resolution()[1]
+        print(self.settings.screensize)
         if self.state == "main":
             self.MenuItems.append(MenuItem(
-                "start", "Start", 200, (000, 000, 000),
-                "Arial", 50, self.settings.screensize[0] // 2))
+                "start", "Start", self.settings.resolution()[0] // 8, (000, 000, 000),
+                "Arial", 50, screenx // 2))
             self.MenuItems.append(MenuItem(
-                "settings", "Settings", 200, (000, 000, 000),
-                "Arial", 50 + (self.settings.screensize[1] // 3), self.settings.screensize[0] // 2))
+                "settings", "Settings", self.settings.resolution()[0] // 8, (000, 000, 000),
+                "Arial", 50 + (screeny // 3), screenx // 2))
             self.MenuItems.append(MenuItem(
-                "quit", "Quit", 200, (000, 000, 000),
-                "Arial", 50 + (self.settings.screensize[1] // 3)*2, self.settings.screensize[0] // 2))
+                "quit", "Quit", self.settings.resolution()[0] // 8, (000, 000, 000),
+                "Arial", 50 + (screeny // 3)*2, screenx // 2))
         elif self.state == "settings":
             self.MenuItems.append(MenuItem(
-                "volume", "<Volume = 1>", 200, (000, 000, 000),
-                "Arial", 100, self.settings.screensize[0] // 2))
+                "resolution", "<Res = " + str(screenx) + str(screeny) + ">", self.settings.resolution()[0] // 11, (000, 000, 000),
+                "Arial", 50, screenx // 2))
             self.MenuItems.append(MenuItem(
-                "fullscreen", "Fullscreen", 200, (000, 000, 000),
-                "Arial", 420, self.settings.screensize[0] // 2))
+                "volume", "<Volume = " + str(self.settings.volume) + ">", self.settings.resolution()[0] // 11, (000, 000, 000),
+                "Arial", 50 + (screeny // 4), screenx // 2))
             self.MenuItems.append(MenuItem(
-                "return", "Return", 200, (000, 000, 000),
-                "Arial", 740, self.settings.screensize[0] // 2))
+                "fullscreen", "Fullscreen", self.settings.resolution()[0] // 11, (000, 000, 000),
+                "Arial", 50 + (screeny // 4)*2, screenx // 2))
+            self.MenuItems.append(MenuItem(
+                "return", "Return", self.settings.resolution()[0] // 11, (000, 000, 000),
+                "Arial", 50 + (screeny // 4)*3, screenx // 2))
         elif self.state == "pause":
             self.MenuItems.append(MenuItem(
-                "return", "Return", 200, (000, 000, 000),
-                "Arial", 100, self.settings.screensize[0] // 2))
+                "return", "Return", self.settings.resolution()[0] // 8, (000, 000, 000),
+                "Arial", 100, screenx // 2))
             self.MenuItems.append(MenuItem(
-                "settings", "Settings", 200, (000, 000, 000),
-                "Arial", 420, self.settings.screensize[0] // 2))
+                "settings", "Settings", self.settings.resolution()[0] // 8, (000, 000, 000),
+                "Arial", 420, screenx // 2))
             self.MenuItems.append(MenuItem(
-                "quit", "Quit", 200, (000, 000, 000),
-                "Arial", 740, self.settings.screensize[0] // 2))
+                "quit", "Quit", self.settings.resolution()[0] // 8, (000, 000, 000),
+                "Arial", 740, screenx // 2))
 
         self.MenuItems[0].selected = True
         pygame.event.clear()
 
     def increase_pointer(self):
-        self.MenuItems[self.pointer].selected = False
+        self.selected_item().selected = False
         self.pointer += 1
         if self.pointer > len(self.MenuItems) - 1:
             self.pointer = 0
-        self.MenuItems[self.pointer].selected = True
+        self.selected_item().selected = True
 
     def decrease_pointer(self):
-        self.MenuItems[self.pointer].selected = False
+        self.selected_item().selected = False
         self.pointer -= 1
         if self.pointer < 0:
             self.pointer = len(self.MenuItems) - 1
-        self.MenuItems[self.pointer].selected = True
+        self.selected_item().selected = True
 
     def activate_selected_menu_item(self, event):
 
         if self.state == "pause":
             if event == pygame.K_RETURN:
-                if self.MenuItems[self.pointer].name == "settings":
+                if self.selected_item().name == "settings":
                     self.prevstate = "pause"
                     self.state = "settings"
                     self.set_menu_items()
-                if self.MenuItems[self.pointer].name == "quit":
+                elif self.selected_item().name == "quit":
                     pygame.quit()
                     pygame.display.quit()
                     sys.exit()
-                if self.MenuItems[self.pointer].name == "return":
-                    self.state = "main"
+                elif self.selected_item().name == "return":
+                    self.settings.state = "game"
                     self.set_menu_items()
 
-        if self.state == "main":
+        elif self.state == "main":
             if event == pygame.K_RETURN:
-                if self.MenuItems[self.pointer].name == "start":
+                if self.selected_item().name == "start":
                     self.settings.state = "join"
-                if self.MenuItems[self.pointer].name == "settings":
+                elif self.selected_item().name == "settings":
                     self.prevstate = "main"
                     self.state = "settings"
                     self.set_menu_items()
-                if self.MenuItems[self.pointer].name == "quit":
+                elif self.selected_item().name == "quit":
                     pygame.quit()
                     pygame.display.quit()
                     sys.exit()
 
-        if self.state == "settings":
+        elif self.state == "settings":
             if event == pygame.K_RETURN:
-                if self.MenuItems[self.pointer].name == "fullscreen":
+                if self.selected_item().name == "fullscreen":
                     if not self.settings.fullscreen:
                         pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
                         self.settings.fullscreen = True
+                        self.set_menu_items()
                     else:
                         pygame.display.set_mode((0, 0))
                         self.settings.fullscreen = False
-                if self.MenuItems[self.pointer].name == "return":
+                elif self.selected_item().name == "return":
                     self.state = self.prevstate
                     self.set_menu_items()
 
-            if event == pygame.K_LEFT:
-                if self.MenuItems[self.pointer].name == "volume" and self.settings.volume > 0:
+            elif event == pygame.K_LEFT:
+                if self.selected_item().name == "resolution":
+                    self.settings.respointer = ((self.settings.respointer + 1) % len(self.settings.resolutions))
+                    self.selected_item().text = "<Resolution = " + str(self.settings.resolutions[self.settings.respointer]) + ">"
+                    gf.update_screen_resolution(self.settings)
+                    self.set_menu_items()
+                elif self.selected_item().name == "volume" and self.settings.volume > 0:
                     self.settings.volume -= 1
-                    self.MenuItems[self.pointer].text = "<Volume = " + str(self.settings.volume) + ">"
+                    self.selected_item().text = "<Volume = " + str(self.settings.volume) + ">"
 
-            if event == pygame.K_RIGHT:
-                if self.MenuItems[self.pointer].name == "volume" and self.settings.volume < 10:
+            elif event == pygame.K_RIGHT:
+                if self.selected_item().name == "resolution":
+                    self.settings.respointer = ((self.settings.respointer - 1) % len(self.settings.resolutions))
+                    self.selected_item().text = "<Resolution = " + str(self.settings.resolutions[self.settings.respointer]) + ">"
+                    gf.update_screen_resolution(self.settings)
+                    self.set_menu_items()
+                elif self.selected_item().name == "volume" and self.settings.volume < 10:
                     self.settings.volume += 1
-                    self.MenuItems[self.pointer].text = "<Volume = " + str(self.settings.volume) + ">"
+                    self.selected_item().text = "<Volume = " + str(self.settings.volume) + ">"
 
 class JoinMenu(object):
     def __init__(self, settings):
@@ -128,16 +147,16 @@ class JoinMenu(object):
     def draw(self, screen, settings):
         screen.fill(settings.bg_color)
         for i in range(4):
-            x = 20 + (i * settings.screensize[0] // 4)
+            x = 20 + (i * settings.resolutions[settings.respointer][0] // 4)
             y = 20
-            pygame.draw.rect(screen, (000, 000, 000), (x, y, settings.screensize[0] // 4 - 40,
-                                                       settings.screensize[1] - 40))
-            text = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", 200).render("Join", 0, self.colors[i])
+            pygame.draw.rect(screen, (000, 000, 000), (x, y, settings.resolutions[settings.respointer][0] // 4 - 40,
+                                                       settings.resolutions[settings.respointer][1] - 40))
+            text = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", self.settings.resolution()[0] // 8 - 40).render("Join", 0, self.colors[i])
             screen.blit(text, (x, y))
 
         for i in range(len(settings.players)):
-            pygame.draw.rect(screen, self.colors[i], (20 + (i * settings.screensize[0] // 4), 20, settings.screensize[0] // 4 - 40,
-                                                       settings.screensize[1] - 40))
+            pygame.draw.rect(screen, self.colors[i], (20 + (i * settings.resolutions[settings.respointer][0] // 4), 20, settings.resolutions[settings.respointer][0] // 4 - 40,
+                                                       settings.resolutions[settings.respointer][1] - 40))
 
 
 
