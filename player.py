@@ -16,12 +16,17 @@ class Player:
         self.screen = screen;
         self.settings = settings;
         self.attackFrames = 16;
-        self.attackCooldown = 60;
+        self.attackCooldown = 30;
         self.attackRange = 128;
         self.attackTimer = 0;
         self.attackDirection = 0
         self.attacking = 0;
-        self.attackPoints = [[0,0],[0,0],[0,0]]
+        self.attackPoints = [[0,0],[0,0],[0,0]];
+        self.dashSpeed = 6;
+        self.dashCooldown = 30;
+        self.dashLength = 6;
+        self.dashTimer = 0;
+        self.dashing = 0;
         self.bodySize = 64;
         self.nucleusSize = 16;
         self.colorPrimary = pygame.Color(color[0],color[1],color[2],255);
@@ -29,6 +34,7 @@ class Player:
         self.speed = 3;
         self.mutations = {};
         self.direction = 0;
+        self.alive = True;
         self.playerNum = playerNum;
         self.right = 0;
         self.left = 0;
@@ -36,6 +42,8 @@ class Player:
         self.down = 0;
         self.innerVertices = [];
         self.outerVertices = [];
+        self.currentInnerVertices = [];
+        self.currentOuterVertices = [];
         self.controllerID = controllerID; #keyboard/joystick
         
         self.calculateVectors()
@@ -66,34 +74,10 @@ class Player:
 
     
     def draw(self):
-        currentInnerVertices = [];
-        currentOuterVertices = [];
         playerSurface = pygame.Surface((pygame.display.Info().current_w,pygame.display.Info().current_h))
         playerSurface.set_colorkey((0,0,0))
         playerSurface.set_alpha(self.colorSecondary.a) 
-        for i in range(36):
-            currentInnerVertices.append([]);
-            currentInnerVertices[i].append(self.innerVertices[i][0] + self.nucleusX);
-            currentInnerVertices[i].append(self.innerVertices[i][1] + self.nucleusY);
-
-            currentOuterVertices.append([]);
-            currentOuterVertices[i].append(self.outerVertices[i][0] + self.x);
-            currentOuterVertices[i].append(self.outerVertices[i][1] + self.y);
-
-            if currentOuterVertices[i][0] < 0:
-                currentOuterVertices[i][0] = 0
-            elif currentOuterVertices[i][0] > self.settings.screensize[0]:
-                currentOuterVertices[i][0] = self.settings.screensize[0]
-
-            if currentOuterVertices[i][1] < 0:
-                currentOuterVertices[i][1] = 0
-            elif currentOuterVertices[i][1] > self.settings.screensize[1]:
-                currentOuterVertices[i][1] = self.settings.screensize[1]
-
-
-        pygame.draw.polygon(playerSurface, self.colorSecondary, currentOuterVertices);
-        pygame.draw.lines(self.screen, self.colorPrimary, True, currentOuterVertices, 3);
-            
+        
         if self.attacking:
             currentAttackVertices = [] 
             for i in range(3):
@@ -104,8 +88,11 @@ class Player:
             pygame.draw.polygon(playerSurface, self.colorSecondary, currentAttackVertices)
             pygame.draw.lines(self.screen,self.colorPrimary, False, currentAttackVertices, 3)
 
-        pygame.draw.polygon(self.screen, (0,0,155), currentInnerVertices);
-        pygame.draw.aalines(self.screen, (155,0,0), True, currentInnerVertices, 5);
+        pygame.draw.polygon(playerSurface, self.colorSecondary, self.currentOuterVertices);
+        pygame.draw.lines(self.screen, self.colorPrimary, True, self.currentOuterVertices, 3);
+            
+        pygame.draw.polygon(self.screen, (0,0,155), self.currentInnerVertices);
+        pygame.draw.aalines(self.screen, (155,0,0), True, self.currentInnerVertices, 5);
         self.screen.blit(playerSurface,(0,0))
         
     
@@ -147,37 +134,33 @@ class Player:
         self.x += self.xSpeed
         self.y += self.ySpeed
 
-        
+        if self.dashing:
+            self.dashing -= 1
+            self.x += self.xSpeed * self.dashSpeed
+            self.y += self.ySpeed * self.dashSpeed
+
         if self.xSpeed == 0 and self.ySpeed == 0:
             self.stretch = 0;
         else:
             if self.xSpeed == 0:
                 self.direction = math.radians(270) if self.ySpeed < 0 else math.radians(90)
-            elif self.ySpeed == 0 :
-                self.direction = math.radians(180) if self.xSpeed < 0 else 0
-            elif self.xSpeed > 0 and self.ySpeed > 0:
-                self.direction =  math.atan(self.ySpeed/self.xSpeed)
-            elif self.xSpeed > 0 and self.ySpeed < 0:
-                self.direction = math.radians(360) + math.atan(self.ySpeed/self.xSpeed)
-            elif self.xSpeed < 0 and self.ySpeed > 0:
-                self.direction  = math.radians(180) + math.atan(self.ySpeed/self.xSpeed)
             else:
-                self.direction = math.radians(180) + math.atan(self.ySpeed/self.xSpeed)
+                self.direction = math.atan2(self.ySpeed,self.xSpeed)
             self.stretch = math.sqrt(self.xSpeed**2+self.ySpeed**2)
 
 
-        if self.x < 32 : 
-            self.x = 32
+        if self.x < self.settings.arena_x + 32 : 
+            self.x = self.settings.arena_x +  32
             self.xSpeed -= self.xSpeed//4
-        elif self.x > self.settings.screensize[0] - 32:
-            self.x = self.settings.screensize[0] - 32
+        elif self.x > self.settings.arena_x + self.settings.arena_dimension - 32:
+            self.x =  self.settings.arena_x + self.settings.arena_dimension - 32
             self.xSpeed = self.xSpeed//4
 
         if self.y < 32 : 
             self.y = 32
             self.ySpeed -= self.ySpeed//4
-        elif self.y > self.settings.screensize[1] - 32:
-            self.y = self.settings.screensize[1] - 32
+        elif self.y > self.settings.arena_dimension - 32:
+            self.y = self.settings.arena_dimension - 32
             self.ySpeed -= self.ySpeed//4
     
         
@@ -186,9 +169,29 @@ class Player:
 
         self.calculateVectors()
 
-        """if self.x != prevX or self.y != prevY:
-            self.attackDirection[0] = math.copysign(1,self.x-prevX) if self.x != prevX else 0;
-            self.attackDirection[1] = math.copysign(1,self.y-prevY) if self.y != prevY else 0;"""
+
+        self.currentInnerVertices = [];
+        self.currentOuterVertices = [];
+
+        for i in range(36):
+            self.currentInnerVertices.append([]);
+            self.currentInnerVertices[i].append(self.innerVertices[i][0] + self.nucleusX);
+            self.currentInnerVertices[i].append(self.innerVertices[i][1] + self.nucleusY);
+
+            self.currentOuterVertices.append([]);
+            self.currentOuterVertices[i].append(self.outerVertices[i][0] + self.x);
+            self.currentOuterVertices[i].append(self.outerVertices[i][1] + self.y);
+
+            if self.currentOuterVertices[i][0] < self.settings.arena_x:
+                self.currentOuterVertices[i][0] = self.settings.arena_x
+            elif self.currentOuterVertices[i][0] > self.settings.arena_x + self.settings.arena_dimension:
+                self.currentOuterVertices[i][0] = self.settings.arena_x + self.settings.arena_dimension
+
+            if self.currentOuterVertices[i][1] < 0:
+                self.currentOuterVertices[i][1] = 0
+            elif self.currentOuterVertices[i][1] > self.settings.arena_dimension:
+                self.currentOuterVertices[i][1] = self.settings.arena_dimension
+
 
         if self.attacking > 0:
             if self.attacking > self.attackFrames:
@@ -202,23 +205,39 @@ class Player:
             self.attackPoints[1][0] -= round(math.cos(self.attackDirection)*self.attackRange/self.attackFrames)
             self.attackPoints[1][1] -= round(math.sin(self.attackDirection)*self.attackRange/self.attackFrames)
 
-        
+        if self.dashTimer > 0:
+            self.dashTimer -= 1
         if self.attackTimer > 0:
-            self.attackTimer -= 1;
+            self.attackTimer -= 1
         
 
     def checkCollisions(self, other):
         if self.attacking > 0:
             if math.sqrt((self.attackPoints[1][0] + self.x - other.nucleusX)**2 + (self.attackPoints[1][1] + self.y - other.nucleusY)**2)<other.nucleusSize:
-                print("I'm gay")
+                other.kill()
                 self.attacking *= -1
-        if math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)<self.bodySize - 6:
-            pass#atan2
+
+        moveDirection = math.atan2(self.y - other.y,self.x - other.x)
+        if math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)<self.bodySize * 1.5:
+            moveDistance = (self.bodySize * 1.5)-(math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2))
+            self.x += math.cos(moveDirection) * moveDistance
+            self.y += math.sin(moveDirection) * moveDistance
+        for point in self.currentOuterVertices:
+            if math.sqrt((point[0] - other.x)**2 + (point[1] - other.y)**2)<other.bodySize:
+                moveDistance = ((other.bodySize) - (math.sqrt((point[0] - other.x)**2 + (point[1] - other.y)**2)))/2
+                point[0] += math.cos(moveDirection) * moveDistance
+                point[1] += math.sin(moveDirection) * moveDistance
+
+
+    def dash(self):
+        if self.dashTimer == 0:
+            self.dashing = self.dashLength
+            self.dashTimer = self.dashCooldown
 
 
     def attack(self):
         if self.attackTimer == 0:
-            attackStartDistance = self.bodySize - (self.bodySize // 8)
+            attackStartDistance = self.bodySize - (self.bodySize // 4)
             spikeWidth = math.radians(10)
             self.attackDirection = math.degrees(self.direction)
             self.attackDirection = math.radians(round(self.attackDirection / 10) * 10)
@@ -230,7 +249,16 @@ class Player:
             self.attackTimer = self.attackCooldown
         
             
-            
+    def kill(self):
+         self.living = False
+         self.settings.living_players -= 1
+
+    def respawn(self):
+        self.alive = True
+        self.x = self.settings.arena_x + 50 + (200 * self.playerNum)
+        self.y = 50  + (400 * self.playerNum)
+        self.settings.living_players += 1
+
             
         
         

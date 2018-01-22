@@ -32,6 +32,8 @@ def keyboardPlayerEvents(event, screen, player, menu, settings):
             menu.set_menu_items()
         if event.key == pygame.K_x:
             player.attack()
+        if event.key == pygame.K_z:
+            player.dash()
 
     elif event.type == pygame.KEYUP:
         if event.key == pygame.K_UP:
