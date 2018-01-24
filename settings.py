@@ -7,6 +7,7 @@ class Settings(object):
         self.default_res = None
         self.fullscreen = True
         self.bg_color = (000, 100, 100)
+        self.font = "assets/fonts/ShareTechMono-Regular.ttf"
         self.players = []
         self.state = "main"
         self.volume = 10
@@ -15,7 +16,12 @@ class Settings(object):
                             (1280, 1024), (1366, 768), (1600, 900),
                             (1920, 980), (1920, 1080)]
         self.respointer = None
+        self.arenaColor = pygame.Color(87, 97, 114)
+        self.arena_x = (width-height)//2
+        self.arena_dimension = height
+        self.living_players = 0
 
     def add_player(self, player):
         self.players.append(player)
+        self.living_players += 1
 

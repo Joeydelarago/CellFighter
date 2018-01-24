@@ -32,6 +32,8 @@ def keyboardPlayerEvents(event, screen, player, menu, settings):
             menu.set_menu_items()
         if event.key == pygame.K_x:
             player.attack()
+        if event.key == pygame.K_z:
+            player.dash()
 
     elif event.type == pygame.KEYUP:
         if event.key == pygame.K_UP:
@@ -76,6 +78,8 @@ def joystickControls(event, screen, player):
         print(event.button)
         if event.button == 2:
             player.attack()
+        elif event.button == 0:
+            player.dash()
 
 
 def check_events(screen, menu, settings):
@@ -138,9 +142,7 @@ def check_events_join(menu, settings, screen):
 
 def draw_arena(screen, settings):
     screen.fill((0, 0, 0))
-    screenx = settings.resolution()[0]
-    screeny = settings.resolution()[1]
-    screen.fill((87, 97, 114), (((screenx - screeny) // 2), 0, screeny,screeny))
+    screen.fill(settings.arenaColor, (settings.arena_x, 0, settings.arena_dimension,settings.arena_dimension))
 
 def draw_game_sidebars(screen, settings):
     screenx = settings.resolution()[0]
@@ -179,10 +181,17 @@ def update_screen(screen, settings):
 
 def update_screen_resolution(settings):
     pygame.display.set_mode(settings.resolutions[settings.respointer])
+    settings.arena_x = ((settings.resolution()[0] - settings.resolution()[1]) // 2)
+    settings.arena_dimension = settings.resolution()[1]
     settings.fullscreen = False
 
 def update_player():
     player.draw()
+
+def new_round(settings):
+    for player in settings.players:
+        player.respawn()
+    settings.living_players -= 1
 
 
 def check_player_collisions():

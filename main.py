@@ -40,13 +40,16 @@ def run_game():
             gf.draw_game_sidebars(screen, settings)
             gf.check_events(screen, menu, settings)
             for player in settings.players:
-                player.update()
-            for player1 in settings.players:
-                for player2 in settings.players:
-                    if player1 != player2:
-                       player1.checkCollisions(player2)
+                if player.alive:
+                    player.update()
+                    for player2 in settings.players:
+                        if player != player2:
+                           player.checkCollisions(player2)
             for player in settings.players:
-                player.draw()
+                if player.alive:
+                    player.draw()
+            if settings.living_players == 1:
+                gf.new_round(settings)
         pygame.display.flip()
 
 
