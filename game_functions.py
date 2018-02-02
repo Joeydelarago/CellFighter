@@ -6,6 +6,8 @@ from time import sleep
 
 
 def controller_check():
+    #Checks for controllers creates and object for each and
+    #initializes them and appends them to the joysticks list.
     joysticks = []
     for i in range(pygame.joystick.get_count()):
         joystick = pygame.joystick.Joystick(i)
@@ -14,6 +16,7 @@ def controller_check():
 
 
 def keyboardPlayerEvents(event, screen, player, menu, settings):
+    #Checks for events from the keyboard.
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_UP:
             player.up = -1
@@ -47,6 +50,7 @@ def keyboardPlayerEvents(event, screen, player, menu, settings):
 
 
 def joystickControls(event, screen, player):
+    #Checks for events from controllers associated with players.
     if event.type == pygame.JOYAXISMOTION:
         if event.axis == 1:
             if math.sqrt(pygame.joystick.Joystick(event.joy).get_axis(0)**2 + event.value**2) > 0.25:
@@ -83,6 +87,8 @@ def joystickControls(event, screen, player):
 
 
 def check_events(screen, menu, settings):
+    #Checks for events and forwards them to the keyboard event handler,
+    #the joystick event handler or quits.
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -102,6 +108,7 @@ def check_events(screen, menu, settings):
 
 
 def check_events_menu(menu, settings):
+    #Checks for events in the menus.
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -118,11 +125,13 @@ def check_events_menu(menu, settings):
                 menu.activate_selected_menu_item(event.key)
 
 def check_events_join(menu, settings, screen):
+    #Checks for events in the join screen menu and adds players and their
+    #associated controlers if the press a button.
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.KEYDOWN: 
+        if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN and len(settings.players) > 0:
                 settings.state = "game"
             elif event.key == pygame.K_ESCAPE:
@@ -137,14 +146,16 @@ def check_events_join(menu, settings, screen):
         elif event.type == pygame.JOYBUTTONDOWN:
             for player in settings.players:
                 if event.joy == player.controllerID:
-                    return 
+                    return
             settings.add_player(Player(screen, settings, len(settings.players) + 1, (180, 80, 80), 100, 400, event.joy))
 
 def draw_arena(screen, settings):
+    #Draws the arena for the players to fight in.
     screen.fill((0, 0, 0))
     screen.fill(settings.arenaColor, (settings.arena_x, 0, settings.arena_dimension,settings.arena_dimension))
 
 def draw_game_sidebars(screen, settings):
+    #Draws the sidebars in the gameloop that indicate the players statuses.
     screenx = settings.resolution()[0]
     screeny = settings.resolution()[1]
     borderx = (screenx - screeny) // 2
@@ -177,9 +188,11 @@ def draw_game_sidebars(screen, settings):
     screen.blit(player_info, (screenx - (borderx), screeny // 2 + screeny // 5))
 
 def update_screen(screen, settings):
+    #Fills the screen with the default background color.
     screen.fill(settings.bgcolor)
 
 def update_screen_resolution(settings):
+    #Updates the screen resolution when changed and the arena size to match.
     pygame.display.set_mode(settings.resolutions[settings.respointer])
     settings.arena_x = ((settings.resolution()[0] - settings.resolution()[1]) // 2)
     settings.arena_dimension = settings.resolution()[1]

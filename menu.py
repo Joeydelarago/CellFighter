@@ -4,81 +4,93 @@ import game_functions as gf
 
 
 class Menu(object):
+    #A class that draws the main menu and sub menus except the join menu.
+    #
+    #param: state, defines the state in which the menu is.
+    #param: prevstate, defines the previous state so that it can be returned too.
+    #param: pointer, points to the current menu item in the menu state.
+    #param: menu_items, list of items in the current menu state.
+    #param: selected_item, item that is currently selected in menu.
+    #param: background, current background image for menu.
     def __init__(self, settings):
         self.state = "main"
         self.prevstate = None
         self.pointer = 0
         self.settings = settings
-        self.MenuItems = []
-        self.selected_item = lambda: self.MenuItems[self.pointer]
+        self.menu_items = []
+        self.selected_item = lambda: self.menu_items[self.pointer]
         self.set_menu_items()
         self.background = pygame.image.load('assets/menu.png')
 
     def draw(self, screen, settings):
+        #draw the background and menu.
         screen.fill(settings.bg_color)
         screen.blit(self.background, (0, 0))
-        for item in self.MenuItems:
+        for item in self.menu_items:
             item.draw(screen, settings)
 
     def set_menu_items(self):
-        self.MenuItems = []
+        #update the current menu items to reflect the menu state.
+        self.menu_items = []
         self.pointer = 0
         screenx = self.settings.resolution()[0]
         screeny = self.settings.resolution()[1]
         print(self.settings.screensize)
         if self.state == "main":
-            self.MenuItems.append(MenuItem(
+            self.menu_items.append(MenuItem(
                 "start", "Start", self.settings.resolution()[0] // 8, (255, 255, 255),
                 self.settings.font, 50, screenx // 2))
-            self.MenuItems.append(MenuItem(
+            self.menu_items.append(MenuItem(
                 "settings", "Settings", self.settings.resolution()[0] // 8, (255, 255, 255),
                 self.settings.font, 50 + (screeny // 3), screenx // 2))
-            self.MenuItems.append(MenuItem(
+            self.menu_items.append(MenuItem(
                 "quit", "Quit", self.settings.resolution()[0] // 8, (255, 255, 255),
                 self.settings.font, 50 + (screeny // 3)*2, screenx // 2))
         elif self.state == "settings":
-            self.MenuItems.append(MenuItem(
+            self.menu_items.append(MenuItem(
                 "resolution", "<Res = " + str(screenx) + str(screeny) + ">", self.settings.resolution()[0] // 11, (255, 255, 255),
                 self.settings.font, 50, screenx // 2))
-            self.MenuItems.append(MenuItem(
+            self.menu_items.append(MenuItem(
                 "volume", "<Volume = " + str(self.settings.volume) + ">", self.settings.resolution()[0] // 11, (255, 255, 255),
                 self.settings.font, 50 + (screeny // 4), screenx // 2))
-            self.MenuItems.append(MenuItem(
+            self.menu_items.append(MenuItem(
                 "fullscreen", "Fullscreen", self.settings.resolution()[0] // 11, (255, 255, 255),
                 self.settings.font, 50 + (screeny // 4)*2, screenx // 2))
-            self.MenuItems.append(MenuItem(
+            self.menu_items.append(MenuItem(
                 "return", "Return", self.settings.resolution()[0] // 11, (255, 255, 255),
                 self.settings.font, 50 + (screeny // 4)*3, screenx // 2))
         elif self.state == "pause":
-            self.MenuItems.append(MenuItem(
+            self.menu_items.append(MenuItem(
                 "return", "Return", self.settings.resolution()[0] // 8, (255, 255, 255),
                 self.settings.font, 100, screenx // 2))
-            self.MenuItems.append(MenuItem(
+            self.menu_items.append(MenuItem(
                 "settings", "Settings", self.settings.resolution()[0] // 8, (255, 255, 255),
                 self.settings.font, 420, screenx // 2))
-            self.MenuItems.append(MenuItem(
+            self.menu_items.append(MenuItem(
                 "quit", "Quit", self.settings.resolution()[0] // 8, (255, 255, 255),
                 self.settings.font, 740, screenx // 2))
 
-        self.MenuItems[0].selected = True
+        self.menu_items[0].selected = True
         pygame.event.clear()
 
     def increase_pointer(self):
+        #increase the pointer for the current menu items.
         self.selected_item().selected = False
         self.pointer += 1
-        if self.pointer > len(self.MenuItems) - 1:
+        if self.pointer > len(self.menu_items) - 1:
             self.pointer = 0
         self.selected_item().selected = True
 
     def decrease_pointer(self):
+        #Decrease the pointer for the current menu items.
         self.selected_item().selected = False
         self.pointer -= 1
         if self.pointer < 0:
-            self.pointer = len(self.MenuItems) - 1
+            self.pointer = len(self.menu_items) - 1
         self.selected_item().selected = True
 
     def activate_selected_menu_item(self, event):
-
+        #Activate the currently selected menu item.
         if self.state == "pause":
             if event == pygame.K_RETURN:
                 if self.selected_item().name == "settings":
@@ -141,6 +153,7 @@ class Menu(object):
                     self.selected_item().text = "<Volume = " + str(self.settings.volume) + ">"
 
 class JoinMenu(object):
+    #Draws the join menu.
     def __init__(self, settings):
         self.settings = settings
         self.colors = [(255, 000, 000), (000, 255, 000),
@@ -164,7 +177,7 @@ class JoinMenu(object):
 
 
 class MenuItem(object):
-
+    #Models the values of a button in the menu screen.
     def __init__(self, name, text, size, color, font, y, x):
         self.name = name
         self.text = text
@@ -180,6 +193,7 @@ class MenuItem(object):
         pass
 
     def draw(self, screen, settings):
+        #Draws the text for the button at it's x and y co ordinates at size 'size'.
         text = self.display_text(self.text, self.size, self.color)
         text_rect = text.get_rect()
         rect = pygame.rect.Rect((self.x - text_rect[2] // 2, self.y),
@@ -191,5 +205,3 @@ class MenuItem(object):
             pass
 
         screen.blit(text, rect)
-
-

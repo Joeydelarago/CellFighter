@@ -2,6 +2,8 @@ import pygame
 
 
 class Settings(object):
+    #Holds the values for all settings in the game. Also hold the list of
+    #current players, possible resolutions and living players.
     def __init__(self, height, width):
         self.screensize = (width, height)
         self.default_res = None
@@ -24,4 +26,3 @@ class Settings(object):
     def add_player(self, player):
         self.players.append(player)
         self.living_players += 1
-
