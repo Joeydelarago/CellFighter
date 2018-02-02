@@ -20,7 +20,7 @@ class Menu(object):
         self.menu_items = []
         self.selected_item = lambda: self.menu_items[self.pointer]
         self.set_menu_items()
-        self.background = pygame.image.load('assets/menu.png')
+        self.background = pygame.image.load('assets/menu.png').convert()
 
     def draw(self, screen, settings):
         #draw the background and menu.

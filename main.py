@@ -3,6 +3,7 @@ import game_functions as gf
 from settings import Settings
 from menu import Menu, JoinMenu
 from player import Player
+from arena import Arena
 
 
 def run_game():
@@ -24,7 +25,8 @@ def run_game():
     settings.default_res = settings.resolution()
     menu = Menu(settings)
     join_menu = JoinMenu(settings)
-    
+    arena = Arena(settings, screen)
+
     while True:
         clock.tick(60)
 
@@ -36,8 +38,8 @@ def run_game():
             gf.check_events_join(menu, settings, screen)
             join_menu.draw(screen, settings)
         elif settings.state == "game":
-            gf.draw_arena(screen, settings)
-            gf.draw_game_sidebars(screen, settings)
+            arena.draw_arena()
+            arena.draw_game_sidebars()
             gf.check_events(screen, menu, settings)
             for player in settings.players:
                 if player.alive:

@@ -149,44 +149,6 @@ def check_events_join(menu, settings, screen):
                     return
             settings.add_player(Player(screen, settings, len(settings.players) + 1, (180, 80, 80), 100, 400, event.joy))
 
-def draw_arena(screen, settings):
-    #Draws the arena for the players to fight in.
-    screen.fill((0, 0, 0))
-    screen.fill(settings.arenaColor, (settings.arena_x, 0, settings.arena_dimension,settings.arena_dimension))
-
-def draw_game_sidebars(screen, settings):
-    #Draws the sidebars in the gameloop that indicate the players statuses.
-    screenx = settings.resolution()[0]
-    screeny = settings.resolution()[1]
-    borderx = (screenx - screeny) // 2
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 20).render("Player 1", 0, (255, 0, 0))
-    screen.blit(player_info, (0, 0))
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Wins:", 0, (255, 0, 0))
-    screen.blit(player_info, (0, screeny // 10))
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Losses:", 0, (255, 0, 0))
-    screen.blit(player_info, (0, screeny // 5))
-
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 20).render("Player 2", 0, (0, 255, 0))
-    screen.blit(player_info, (0, screeny // 2))
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Wins:", 0, (0, 255, 0))
-    screen.blit(player_info, (0, (screeny // 2) + screeny // 10))
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Losses:", 0, (0, 255, 0))
-    screen.blit(player_info, (0, (screeny // 2) + screeny // 5))
-
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 20).render("Player 3", 0, (0, 0, 255))
-    screen.blit(player_info, (screenx - (borderx), 0))
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Wins:", 0, (0, 0, 255))
-    screen.blit(player_info, (screenx - (borderx), screeny // 10))
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Losses:", 0, (0, 0, 255))
-    screen.blit(player_info, (screenx - (borderx), screeny // 5))
-
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 20).render("Player 4", 0, (255, 255, 0))
-    screen.blit(player_info, (screenx - (borderx), screeny // 2))
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Wins:", 0, (255, 255, 0))
-    screen.blit(player_info, (screenx - (borderx), screeny // 2 + screeny // 10))
-    player_info = pygame.font.Font("assets/fonts/Montserrat-Medium.ttf", screenx // 25).render("Losses:", 0, (255, 255, 0))
-    screen.blit(player_info, (screenx - (borderx), screeny // 2 + screeny // 5))
-
 def update_screen(screen, settings):
     #Fills the screen with the default background color.
     screen.fill(settings.bgcolor)
