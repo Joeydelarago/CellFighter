@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 
 class Player:
     
@@ -30,8 +31,11 @@ class Player:
         self.bodySize = 64;
         self.nucleusSize = 16;
         self.colorPrimary = pygame.Color(color[0],color[1],color[2],255);
-        self.colorSecondary = pygame.Color(color[0],color[1],color[2],140);
-        self.speed = 3;
+        self.colorSecondary = pygame.Color(color[0],color[1],color[2],180);
+        self.colorSecondaryRed = 60;
+        self.colorSecondaryGreen = 0;
+        self.colorSecondaryBlue = 0;
+        self.speed = 5;
         self.mutations = {};
         self.direction = 0;
         self.alive = True;
@@ -45,31 +49,12 @@ class Player:
         self.currentInnerVertices = [];
         self.currentOuterVertices = [];
         self.controllerID = controllerID; #keyboard/joystick
-        
-        self.calculateVectors()
-        
-    
-    def calculateVectors(self):
-        degrees_direction = math.degrees(self.direction)
-        self.outerVertices = [];
-        self.innerVertices = [];
-        for i in range(36):
-            modifier = 1;
-            radians = math.radians(i * 10);
-            if self.stretch:
-                angle_difference = abs(degrees_direction - (i * 10)) % 180
-                if angle_difference > 90:
-                    angle_difference = 180 - angle_difference;
+        self.renderPolygons = [];
 
-                modifier *= 1 - angle_difference/720 * (self.stretch/3)
+        self._calculateVectors()
+        self._calculateDrawVertices()
 
-            self.outerVertices.append([]);
-            self.outerVertices[i].append(round(math.cos(radians)*self.bodySize*(modifier)));
-            self.outerVertices[i].append(round(math.sin(radians)*self.bodySize*(modifier)));
-            
-            self.innerVertices.append([]);
-            self.innerVertices[i].append(round(math.cos(radians)*self.nucleusSize));
-            self.innerVertices[i].append(round(math.sin(radians)*self.nucleusSize));
+
 
 
     
@@ -88,11 +73,32 @@ class Player:
             pygame.draw.polygon(playerSurface, self.colorSecondary, currentAttackVertices)
             pygame.draw.lines(self.screen,self.colorPrimary, False, currentAttackVertices, 3)
 
-        pygame.draw.polygon(playerSurface, self.colorSecondary, self.currentOuterVertices);
-        pygame.draw.lines(self.screen, self.colorPrimary, True, self.currentOuterVertices, 3);
+        for i in range(len(self.renderPolygons)):
+            drawPolygon = []
+            startInnerVertice = self.renderPolygons[i][0]
+            endInnerVertice = self.renderPolygons[(i+1)%(len(self.renderPolygons))][0]
+            startOuterVertice = self.renderPolygons[i][1]
+            endOuterVertice = self.renderPolygons[(i+1)%(len(self.renderPolygons))][0] + 1
+            """drawPolygon += [self.currentInnerVertices[startInnerVertice]]
+            drawPolygon += [self.currentInnerVertices[endInnerVertice]]"""
+            for n in range(((36 + (endInnerVertice - startInnerVertice))%36)+1):
+                drawPolygon.append(self.currentInnerVertices[(n+startInnerVertice)%36])
+            for n in range(((36 + (endOuterVertice - startOuterVertice))%36),-1,-1):
+                drawPolygon.append(self.currentOuterVertices[(n+startOuterVertice)%36])
+            redColor = self.colorSecondary.r
+            blueColor = self.colorSecondary.b
+            greenColor = self.colorSecondary.g 
+            drawColor = pygame.Color(redColor,greenColor,blueColor,255)
+            indexModifier = (i%(len(self.renderPolygons)))
+            drawColor.hsva = [((drawColor.hsva[0]+indexModifier*4)%360),(drawColor.hsva[1]-indexModifier-15)%100,(drawColor.hsva[2])%100,100]
+            print(redColor)
+            pygame.draw.polygon(playerSurface,drawColor,drawPolygon)
+
+        """pygame.draw.polygon(playerSurface, self.colorSecondary, self.currentOuterVertices);"""
+        """pygame.draw.lines(self.screen, self.colorPrimary, True, self.currentOuterVertices, 3);"""
             
         pygame.draw.polygon(self.screen, (0,0,155), self.currentInnerVertices);
-        pygame.draw.aalines(self.screen, (155,0,0), True, self.currentInnerVertices, 5);
+        #pygame.draw.aalines(self.screen, (155,0,0), True, self.currentInnerVertices, 5);
         self.screen.blit(playerSurface,(0,0))
         
     
@@ -167,7 +173,7 @@ class Player:
         self.nucleusX = self.x - (self.xSpeed / self.speed)*8
         self.nucleusY = self.y - (self.ySpeed / self.speed)*8 
 
-        self.calculateVectors()
+        self._calculateVectors()
 
 
         self.currentInnerVertices = [];
@@ -200,6 +206,13 @@ class Player:
                 self.attacking += 1
             self.attackPoints[1][0] += round(math.cos(self.attackDirection)*self.attackRange/self.attackFrames)
             self.attackPoints[1][1] += round(math.sin(self.attackDirection)*self.attackRange/self.attackFrames)
+
+            if self.attackPoints[1][0] + self.x < self.settings.arena_x or \
+               self.attackPoints[1][0] + self.x > self.settings.arena_x + self.settings.arena_dimension or \
+               self.attackPoints[1][1] + self.y< 0 or \
+               self.attackPoints[1][1] + self.y> self.settings.arena_dimension:
+                self.attacking *= -1
+
         elif self.attacking < 0:
             self.attacking += 1
             self.attackPoints[1][0] -= round(math.cos(self.attackDirection)*self.attackRange/self.attackFrames)
@@ -259,6 +272,34 @@ class Player:
         self.y = 50  + (400 * self.playerNum)
         self.settings.living_players += 1
 
+    def _calculateVectors(self):
+        degrees_direction = math.degrees(self.direction)
+        self.outerVertices = [];
+        self.innerVertices = [];
+        for i in range(36):
+            modifier = 1;
+            radians = math.radians(i * 10);
+            if self.stretch:
+                angle_difference = abs(degrees_direction - (i * 10)) % 180
+                if angle_difference > 90:
+                    angle_difference = 180 - angle_difference;
+
+                modifier *= 1 - angle_difference/720 * (self.stretch/4)
+
+            self.outerVertices.append([]);
+            self.outerVertices[i].append(round(math.cos(radians)*self.bodySize*(modifier)));
+            self.outerVertices[i].append(round(math.sin(radians)*self.bodySize*(modifier)));
             
+            self.innerVertices.append([]);
+            self.innerVertices[i].append(round(math.cos(radians)*self.nucleusSize));
+            self.innerVertices[i].append(round(math.sin(radians)*self.nucleusSize));
+
+    def _calculateDrawVertices(self):
+        for i in range(4):
+            innerVertice = random.randrange(4 + i*9,7 + i*9)%36
+            outerVertice = random.randrange(innerVertice-1,innerVertice+1)%36
+            self.renderPolygons += [[innerVertice,outerVertice]]
+        #self.renderPolygons += [[self.renderPolygons[0][0]+1,self.renderPolygons[0][1]+1]]
+
         
-        
+    
