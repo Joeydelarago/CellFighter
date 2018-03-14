@@ -215,35 +215,48 @@ class Menu(object):
 
 
 class JoinMenu(object):
-    """Draws the join menu."""
+    """ Draws the join menu.
+
+        Arguments:
+            settings(:obj: settings): Settings object that stores all settings.
+
+        Attributes:
+            text_color (tuple): RGB tuple for color of text.
+            background (image): Image to blit as background.
+            colors (list of tuple): List of the four player colors as tuples.
+    """
     def __init__(self, settings):
         self.settings = settings
+        self.text_color = (230, 230, 230)
         self.background = pygame.image.load('assets/menu.png').convert()
         self.colors = [(255, 000, 000), (000, 255, 000),
                        (000, 000, 255), (255, 255, 000)]
 
     def draw(self, screen, settings):
+        """Draws the Join screen"""
         screen.blit(self.background, (0, 0))
+        width = settings.resolutions[settings.respointer][0]
+        height = settings.resolutions[settings.respointer][1]
         for i in range(4):
-            x = 20 + (i * settings.resolutions[settings.respointer][0] // 4)
-            y = 20
-            pygame.draw.rect(screen,
-                             (255, 255, 255),
-                             (x,
-                              y,
-                              settings.resolutions[settings.respointer][0] // 4 - 40,
-                              settings.resolutions[settings.respointer][1] - 40))
-
-            text = pygame.font.Font(self.settings.font, self.settings.resolution()[0] // 8 - 40).render("Join", 0, self.colors[i])
+            x = 40 + (width // 8)
+            y = 40 + (height // 8)
+            if i == 1 or i == 3:
+                x = x*4 + 40
+            if i == 2 or i == 3:
+                y = y*4
+            text = pygame.font.Font(self.settings.font, width // 8 - 40).render("Join", 0, self.text_color)
+            print('screen', x, y)
             screen.blit(text, (x, y))
 
         for i in range(len(settings.players)):
-            pygame.draw.rect(screen,
-                             self.colors[i],
-                             (20 + (i * settings.resolutions[settings.respointer][0] // 4),
-                              20,
-                              settings.resolutions[settings.respointer][0] // 4 - 40,
-                              settings.resolutions[settings.respointer][1] - 40))
+            x = 40 + (width // 8)
+            y = 40 + (height // 8)
+            if i == 1 or i == 3:
+                x = x*4 + 40
+            if i == 2 or i == 3:
+                y = y*4
+            text = pygame.font.Font(self.settings.font, width // 8 - 40).render("Join", 0, self.colors[i])
+            screen.blit(text, (x, y))
 
 
 class MenuItem(object):

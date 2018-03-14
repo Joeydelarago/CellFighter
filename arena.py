@@ -23,17 +23,17 @@ class Arena(object):
         self.settings = settings
         self.screen = screen
         self.background = pygame.image.load(self.settings.background()).convert()
-        self.text_color = (230, 230, 230)
+        self.text_color = (200, 200, 200)
         self.font = "assets/fonts/Montserrat-Medium.ttf"
         self.arena = pygame.Surface((self.settings.arena_dimension,
                                      self.settings.arena_dimension))
         self.arena.set_alpha(0)
         self.arenar = pygame.Surface((self.settings.arena_x,
                                       self.settings.arena_dimension))
-        self.arenar.set_alpha(120)
+        self.arenar.set_alpha(60)
         self.arenal = pygame.Surface((self.settings.arena_x,
                                       self.settings.arena_dimension))
-        self.arenal.set_alpha(120)
+        self.arenal.set_alpha(60)
 
     def draw_arena(self):
         """Draws the arena for the players to fight in."""
@@ -61,28 +61,28 @@ class Arena(object):
 
         stats = pygame.font.Font(f, screenx // 20).render("Player 1", 0, t)
         s.blit(stats, (0, 0))
-        stats = pygame.font.Font(f, screenx // 25).render("Wins:", 0, t)
+        stats = pygame.font.Font(f, screenx // 25).render("W:", 0, t)
         s.blit(stats, (0, screeny // 10))
-        stats = pygame.font.Font(f, screenx // 25).render("Losses:", 0, t)
-        s.blit(stats, (0, screeny // 5))
+        stats = pygame.font.Font(f, screenx // 25).render("L:", 0, t)
+        s.blit(stats, (screenx // 10, screeny // 10))
 
         stats = pygame.font.Font(f, screenx // 20).render("Player 2", 0, t)
         s.blit(stats, (0, screeny // 2))
-        stats = pygame.font.Font(f, screenx // 25).render("Wins:", 0, t)
+        stats = pygame.font.Font(f, screenx // 25).render("W:", 0, t)
         s.blit(stats, (0, (screeny // 2) + screeny // 10))
-        stats = pygame.font.Font(f, screenx // 25).render("Losses:", 0, t)
-        s.blit(stats, (0, (screeny // 2) + screeny // 5))
+        stats = pygame.font.Font(f, screenx // 25).render("L:", 0, t)
+        s.blit(stats, (screenx // 10, (screeny // 2) + screeny // 10))
 
         stats = pygame.font.Font(f, screenx // 20).render("Player 3", 0, t)
         s.blit(stats, (screenx - (borderx), 0))
-        stats = pygame.font.Font(f, screenx // 25).render("Wins:", 0, t)
+        stats = pygame.font.Font(f, screenx // 25).render("W:", 0, t)
         s.blit(stats, (screenx - (borderx), screeny // 10))
-        stats = pygame.font.Font(f, screenx // 25).render("Losses:", 0, t)
-        s.blit(stats, (screenx - (borderx), screeny // 5))
+        stats = pygame.font.Font(f, screenx // 25).render("L:", 0, t)
+        s.blit(stats, (screenx - (borderx) + screenx // 10, screeny // 10))
 
         stats = pygame.font.Font(f, screenx // 20).render("Player 4", 0, t)
         s.blit(stats, (screenx - (borderx), screeny // 2))
-        stats = pygame.font.Font(f, screenx // 25).render("Wins:", 0, t)
+        stats = pygame.font.Font(f, screenx // 25).render("W:", 0, t)
         s.blit(stats, (screenx - (borderx), screeny // 2 + screeny // 10))
-        stats = pygame.font.Font(f, screenx // 25).render("Losses:", 0, t)
-        s.blit(stats, (screenx - (borderx), screeny // 2 + screeny // 5))
+        stats = pygame.font.Font(f, screenx // 25).render("L:", 0, t)
+        s.blit(stats, (screenx - (borderx) + screenx // 10, screeny // 2 + screeny // 10))
