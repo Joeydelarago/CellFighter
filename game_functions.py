@@ -6,8 +6,9 @@ from time import sleep
 
 
 def controller_check():
-    #Checks for controllers creates and object for each and
-    #initializes them and appends them to the joysticks list.
+    """ Checks for controllers creates and object for each and initializes them
+        and appends them to the joysticks list.
+    """
     joysticks = []
     for i in range(pygame.joystick.get_count()):
         joystick = pygame.joystick.Joystick(i)
@@ -16,7 +17,7 @@ def controller_check():
 
 
 def keyboardPlayerEvents(event, screen, player, menu, settings):
-    #Checks for events from the keyboard.
+    """Checks for events from the keyboard."""
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_UP:
             player.up = -1
@@ -50,12 +51,14 @@ def keyboardPlayerEvents(event, screen, player, menu, settings):
 
 
 def joystickControls(event, screen, player):
-    #Checks for events from controllers associated with players.
+    """Checks for events from controllers associated with players."""
     if event.type == pygame.JOYAXISMOTION:
         if event.axis == 1:
-            if math.sqrt(pygame.joystick.Joystick(event.joy).get_axis(0)**2 + event.value**2) > 0.25:
+            if math.sqrt(pygame.joystick.Joystick(event.joy).get_axis(0)
+                         ** 2
+                         + event.value**2) > 0.25:
                 if abs(event.value) > 1:
-                    event.value = math.copysign(1,event.value)
+                    event.value = math.copysign(1, event.value)
                 if event.value < -0:
                     player.up = event.value
                     player.down = 0
@@ -66,9 +69,11 @@ def joystickControls(event, screen, player):
                 player.up = 0
                 player.down = 0
         elif event.axis == 0:
-            if math.sqrt(pygame.joystick.Joystick(event.joy).get_axis(0)**2 + event.value**2) > 0.25:
+            if math.sqrt(pygame.joystick.Joystick(event.joy).get_axis(0)
+                         ** 2
+                         + event.value**2) > 0.25:
                 if abs(event.value) > 1:
-                    event.value = math.copysign(1,event.value)
+                    event.value = math.copysign(1, event.value)
                 if event.value < -0:
                     player.left = event.value
                     player.right = 0
@@ -87,8 +92,9 @@ def joystickControls(event, screen, player):
 
 
 def check_events(screen, menu, settings):
-    #Checks for events and forwards them to the keyboard event handler,
-    #the joystick event handler or quits.
+    """ Checks for events and forwards them to the keyboard event handler,
+        the joystick event handler or quits.
+    """
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -106,9 +112,8 @@ def check_events(screen, menu, settings):
                     joystickControls(event, screen, player)
 
 
-
 def check_events_menu(menu, settings):
-    #Checks for events in the menus.
+    """Checks for events in the menus."""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -124,9 +129,11 @@ def check_events_menu(menu, settings):
             else:
                 menu.activate_selected_menu_item(event.key)
 
+
 def check_events_join(menu, settings, screen):
-    #Checks for events in the join screen menu and adds players and their
-    #associated controlers if the press a button.
+    """ Checks for events in the join screen menu and adds players and their
+        associated controlers if the press a button.
+    """
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -141,27 +148,58 @@ def check_events_join(menu, settings, screen):
                 for player in settings.players:
                     if player.controllerID == "keyboard":
                         return
-                settings.add_player(Player(screen, settings, len(settings.players) + 1, (180, 80, 80), 100, 400, "keyboard"))
+                settings.add_player(Player(screen,
+                                           settings,
+                                           len(settings.players) + 1,
+                                           (180, 80, 80), 100, 400,
+                                           "keyboard"))
 
         elif event.type == pygame.JOYBUTTONDOWN:
             for player in settings.players:
                 if event.joy == player.controllerID:
                     return
-            settings.add_player(Player(screen, settings, len(settings.players) + 1, (180, 80, 80), 100, 400, event.joy))
+            settings.add_player(Player(screen,
+                                       settings,
+                                       len(settings.players) + 1,
+                                       (180, 80, 80),
+                                       100,
+                                       400,
+                                       event.joy))
 
-def update_screen(screen, settings):
-    #Fills the screen with the default background color.
-    screen.fill(settings.bgcolor)
 
 def update_screen_resolution(settings):
-    #Updates the screen resolution when changed and the arena size to match.
+    """Updates the screen resolution, and arean size when res is changed"""
     pygame.display.set_mode(settings.resolutions[settings.respointer])
-    settings.arena_x = ((settings.resolution()[0] - settings.resolution()[1]) // 2)
+    settings.arena_x = ((settings.resolution()[0]
+                         - settings.resolution()[1]) // 2)
     settings.arena_dimension = settings.resolution()[1]
     settings.fullscreen = False
 
+
+def find_screen_resolution(settings):
+    """Finds a game resolution appropriate for the screen"""
+    monitor_w = pygame.display.Info().current_w
+    monitor_h = pygame.display.Info().current_h
+    for i in range(len(settings.resolutions)):
+        # This checks if the monitors resolution matches any of the
+        # avaliable ones.
+        if settings.resolutions[i][0] == monitor_w and \
+           settings.resolutions[i][1] == monitor_h:
+            settings.respointer = i
+
+    if settings.respointer is None:
+        # If a match resolutoin can't be found it will try to find one with
+        # the same aspect ratio.
+        settings.respointer = 1
+        for i in range(len(settings.resolutions)):
+            if (monitor_w // monitor_h ==
+               settings.resolutions[i][0] // settings.resolutions[i][1]):
+                respointer = i
+
+
 def update_player():
     player.draw()
+
 
 def new_round(settings):
     for player in settings.players:
